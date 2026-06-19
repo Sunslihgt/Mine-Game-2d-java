@@ -40,7 +40,7 @@ public class Assets {
 	public static Font inventory_font;
 
 	public static void init() {
-		inventory_font = FontLoader.loadFont("resources/assets/fonts/MinecraftRegular-Bmg3.otf", 22);
+		inventory_font = FontLoader.loadFont("/assets/fonts/MinecraftRegular-Bmg3.otf", 22);
 		
 		// Blocks
 		SpriteSheet blockTileSheet = new SpriteSheet(ImageLoader.loadImage("/assets/textures/block_spritesheet_x16_v1.png"));
