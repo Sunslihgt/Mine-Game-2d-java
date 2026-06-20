@@ -17,9 +17,13 @@ public class Item {
 		return type.leftClickAction(handler);
 	}
 
-	// Right click action
+	/**
+	 * Right click action
+	 * @param handler Game Handler
+	 * @return true if the item count reaches 0, else false
+	 */
 	public boolean rightClickAction(Handler handler) {
-		boolean consumeItem = type.rightClickAction(handler);
+		boolean consumeItem = type.rightClickAction(handler) && handler.getPlayer().getGameMode() == GameMode.SURVIVAL;
 		if (consumeItem) {
 			count--;
 			if (count <= 0) {

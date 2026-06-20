@@ -53,7 +53,7 @@ public class Player {
 
 	private void init() {
 		playerCursor = new PlayerCursor(handler);
-		playerInventory = new PlayerInventory(handler);
+		playerInventory = new PlayerInventory(handler, this);
 	}
 
 	public void tick() {
@@ -368,6 +368,10 @@ public class Player {
 
 	public PlayerInventory getPlayerInventory() {
 		return playerInventory;
+	}
+
+	public GameMode getGameMode() {
+		return gameMode;
 	}
 
 }

@@ -33,12 +33,14 @@ public class PlayerInventory {
 	private FurnaceTileEntity furnaceSelected;
 	
 	private boolean lastLeftClick = false, lastRightClick = false;
-	
-	private Handler handler;
-	
-	public PlayerInventory(Handler handler) {
+
+	private final Handler handler;
+	private final Player player;
+
+	public PlayerInventory(Handler handler, Player player) {
 		this.handler = handler;
-		
+		this.player = player;
+
 		init();
 	}
 	
@@ -394,7 +396,10 @@ public class PlayerInventory {
 			
 			// Check if there is a block
 			if (block != null && block.getId() != BlockType.airBlock.getId()) {
-				handler.getWorld().damageBlock(cursorX, cursorY, inventory.getSelectedToulbarItem());
+				switch (player.getGameMode()) {
+                    case SURVIVAL -> handler.getWorld().damageBlock(cursorX, cursorY, inventory.getSelectedToolbarItem());
+                    case CREATIVE, SPECTATOR -> handler.getWorld().deleteBlock(cursorX, cursorY);
+                }
 			}
 		}
 		
@@ -402,7 +407,7 @@ public class PlayerInventory {
 	
 	public void selectedItemRightClick() {
 		if (handler.getPlayer().getPlayerCursor().isCursorVisible()) {
-			boolean consumeItems = inventory.getSelectedToulbarItem().rightClickAction(handler);
+			boolean consumeItems = inventory.getSelectedToolbarItem().rightClickAction(handler);
 			if (consumeItems) {
 				inventory.setSelectedToulbarItem(null);
 			}

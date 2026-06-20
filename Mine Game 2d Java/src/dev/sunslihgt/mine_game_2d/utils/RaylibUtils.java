@@ -25,6 +25,19 @@ public class RaylibUtils {
         );
     }
 
+    public static Color createColorFloat(float r, float g, float b) {
+        return createColorFloat(r, g, b, 1f);
+    }
+
+    public static Color createColorFloat(float r, float g, float b, float a) {
+        return new Color(
+                (byte) Math.clamp(r * 0xFF, 0, 0xFF),
+                (byte) Math.clamp(g * 0xFF, 0, 0xFF),
+                (byte) Math.clamp(b * 0xFF, 0, 0xFF),
+                (byte) Math.clamp(a * 0xFF, 0, 0xFF)
+        );
+    }
+
     // Texture
     public static Rectangle getTextureRectangle(Texture texture) {
         return new Rectangle(

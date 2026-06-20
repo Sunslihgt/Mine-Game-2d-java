@@ -340,7 +340,7 @@ public class Inventory {
 		return inventoryCellsAmount;
 	}
 	
-	public Item getSelectedToulbarItem() {
+	public Item getSelectedToolbarItem() {
 		return items[selectedToolbarIndex];
 	}
 	

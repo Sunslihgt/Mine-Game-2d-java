@@ -2,8 +2,6 @@ package dev.sunslihgt.mine_game_2d.input;
 
 import com.raylib.Raylib;
 import com.raylib.Raylib.MouseButton;
-import com.raylib.Raylib.MouseCursor;
-import dev.sunslihgt.mine_game_2d.Handler;
 
 public class MouseManager {
 
@@ -11,10 +9,6 @@ public class MouseManager {
 	private int mouseX, mouseY;
 	private int scroll;
 	private boolean mouseInScreen = true;
-
-	public MouseManager() {
-		Raylib.setMouseCursor(MouseCursor.MOUSE_CURSOR_CROSSHAIR);
-	}
 
     public void tick() {
         mouseX = Raylib.getMouseX();
