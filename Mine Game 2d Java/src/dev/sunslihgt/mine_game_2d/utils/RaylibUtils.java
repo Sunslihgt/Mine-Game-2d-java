@@ -8,15 +8,15 @@ import dev.sunslihgt.mine_game_2d.gfx.Assets;
 
 public class RaylibUtils {
     // Colors
-    public static Color CreateColor(int r, int g, int b) {
-        return CreateColor(r, g, b, 0xFF);
+    public static Color createColor(int r, int g, int b) {
+        return createColor(r, g, b, 0xFF);
     }
 
-    public static Color CreateColor(int r, int g, int b, int a) {
+    public static Color createColor(int r, int g, int b, int a) {
         return new Color((byte) r, (byte) g, (byte) b, (byte) a);
     }
 
-    public static Color CreateColor(int rgb) { // Hexadecimal int to color (rgb=0x123456 -> r=0x12, g=0x34, b=0x56)
+    public static Color createColor(int rgb) { // Hexadecimal int to color (rgb=0x123456 -> r=0x12, g=0x34, b=0x56)
         return new Color(
                 (byte) (rgb >> 4),
                 (byte) ((rgb >> 2) & 0xFF),
@@ -26,7 +26,7 @@ public class RaylibUtils {
     }
 
     // Texture
-    public static Rectangle GetTextureRectangle(Texture texture) {
+    public static Rectangle getTextureRectangle(Texture texture) {
         return new Rectangle(
                 0,
                 0,

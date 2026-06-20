@@ -21,6 +21,7 @@ public class GameCamera {
 	}
 
 	public void calculateOffset() {
+		// TODO: use Raylib's camera system
 		Player player = handler.getPlayer();
 
 		xOffset = (int) (player.getX() - handler.getGame().getWidth() / 2);

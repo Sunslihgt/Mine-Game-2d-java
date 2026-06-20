@@ -22,7 +22,7 @@ public class Player {
 	private static final int JUMP_COOLDOWN = 75;
 	private static final int MAX_BASE_LIFE = 20;
 
-	private static final Color PLAYER_COLOR = RaylibUtils.CreateColor(0x023047);
+	private static final Color PLAYER_COLOR = RaylibUtils.createColor(0x023047);
 	
 	private static final int clickCooldown = 50;
 	private long lastRightClickTime = 0;

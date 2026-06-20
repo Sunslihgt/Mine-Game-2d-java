@@ -33,8 +33,8 @@ public class Inventory {
 	private int toolbarScreenXOffset, toolbarScreenYOffset;
 	
 	// Colors
-	public final static Color INVENTORY_COLOR = RaylibUtils.CreateColor(220, 220, 220);
-	public final static Color INVENTORY_CELL_COLOR = RaylibUtils.CreateColor(150, 150, 150);
+	public final static Color INVENTORY_COLOR = RaylibUtils.createColor(220, 220, 220);
+	public final static Color INVENTORY_CELL_COLOR = RaylibUtils.createColor(150, 150, 150);
 	public final static Color TOOLBAR_SELECTED_COLOR = Raylib.WHITE;
 	
 	// Items

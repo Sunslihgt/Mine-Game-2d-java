@@ -19,7 +19,7 @@ public class Game {
 
 	private boolean running = false;
 
-	private final Color SKY_COLOR = RaylibUtils.CreateColor(135, 206, 235);
+	private final Color SKY_COLOR = RaylibUtils.createColor(135, 206, 235);
 
 	// Display
 	private Display display;
