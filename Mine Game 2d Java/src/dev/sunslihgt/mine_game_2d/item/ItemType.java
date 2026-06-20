@@ -1,33 +1,8 @@
 package dev.sunslihgt.mine_game_2d.item;
 
-import java.awt.image.BufferedImage;
-
+import com.raylib.Texture;
 import dev.sunslihgt.mine_game_2d.Handler;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.ChestItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.CoalItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.CoalOreItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.DirtItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.FurnaceItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.GrassItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.IronAxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.IronIngotItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.IronOreItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.IronPickaxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.IronShovelItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.OakLeavesItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.OakPlankItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.OakWoodItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.RubyItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.RubyOreItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.StickItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.StoneAxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.StoneItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.StonePickaxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.StoneShovelItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.TorchItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.WoodenAxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.WoodenPickaxeItem;
-import dev.sunslihgt.mine_game_2d.item.item_types_list.WoodenShovelItem;
+import dev.sunslihgt.mine_game_2d.item.item_types_list.*;
 
 public class ItemType {
 
@@ -63,14 +38,14 @@ public class ItemType {
 	// ItemType class
 	protected final int id;
 	protected String name;
-	protected BufferedImage texture;
+	protected Texture texture;
 	protected int maxStack;
 	protected ToolType toolType;
 	protected int toolLvl;
 	protected float toolEfficiency;
 	protected float fuelBurnTime; // Fuel duration (in nb of items)
 
-	public ItemType(int id, String name, BufferedImage texture, int maxStack, ToolType toolType, int toolLvl, float toolEfficiency, float fuelBurnTime) {
+	public ItemType(int id, String name, Texture texture, int maxStack, ToolType toolType, int toolLvl, float toolEfficiency, float fuelBurnTime) {
 		this.id = id;
 		this.name = name;
 		this.texture = texture;
@@ -101,7 +76,7 @@ public class ItemType {
 		return name;
 	}
 
-	public BufferedImage getTexture() {
+	public Texture getTexture() {
 		return texture;
 	}
 

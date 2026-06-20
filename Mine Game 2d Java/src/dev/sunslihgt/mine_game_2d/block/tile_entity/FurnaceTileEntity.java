@@ -1,7 +1,6 @@
 package dev.sunslihgt.mine_game_2d.block.tile_entity;
 
-import java.awt.Graphics;
-
+import com.raylib.Raylib;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
@@ -12,6 +11,7 @@ import dev.sunslihgt.mine_game_2d.player.Inventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory.OpenedInventoryEnum;
 import dev.sunslihgt.mine_game_2d.recipes.CookingRecipes;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class FurnaceTileEntity extends TileEntity {
 	
@@ -143,18 +143,18 @@ public class FurnaceTileEntity extends TileEntity {
 	}
 	
 	@Override
-	public void render(Graphics g, int xOffset, int yOffset) {
+	public void render(int xOffset, int yOffset) {
 		if (type.getTexture() != null) {
 			// Texture
 			if (fuelLeft > 0) { // Furnace On
-				g.drawImage(Assets.furnace_block_on, x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH, null);
+				RaylibUtils.draw(Assets.furnace_block_on, x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH);
 			} else { // Furnace Off
-				g.drawImage(Assets.furnace_block_off, x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH, null);
+				RaylibUtils.draw(Assets.furnace_block_off, x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH);
 			}
 			
 			// Breaking texture
 			if (breakingStage > 0 && breakingStage - 1 < Assets.block_breaking.length) {
-				g.drawImage(Assets.block_breaking[breakingStage - 1], x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH, null);
+				RaylibUtils.draw(Assets.block_breaking[breakingStage - 1], x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH);
 			}
 		}
 		
@@ -168,40 +168,36 @@ public class FurnaceTileEntity extends TileEntity {
 	}
 	
 	// Called by the player if the furnace is opened
-	public void renderFurnaceInventory(Graphics g) {
+	public void renderFurnaceInventory() {
 		// Background
-		g.setColor(Inventory.INVENTORY_COLOR);
-		g.fillRect(INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET, INVENTORY_WIDTH, INVENTORY_HEIGHT);
+		Raylib.drawRectangle(INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET, INVENTORY_WIDTH, INVENTORY_HEIGHT, Inventory.INVENTORY_COLOR);
 		
 		// Inventory cells
-		g.setColor(Inventory.INVENTORY_CELL_COLOR);
 		int cellSize = Inventory.INVENTORY_SCREEN_CELL_SIZE;
-		g.fillRect(SMELTING_X_OFFSET, SMELTING_Y_OFFSET, cellSize, cellSize);
-		g.fillRect(SMELTED_X_OFFSET, SMELTING_Y_OFFSET, cellSize, cellSize);
-		g.fillRect(FUEL_X_OFFSET, FUEL_Y_OFFSET, cellSize, cellSize);
+		Raylib.drawRectangle(SMELTING_X_OFFSET, SMELTING_Y_OFFSET, cellSize, cellSize, Inventory.INVENTORY_CELL_COLOR);
+		Raylib.drawRectangle(SMELTED_X_OFFSET, SMELTING_Y_OFFSET, cellSize, cellSize, Inventory.INVENTORY_CELL_COLOR);
+		Raylib.drawRectangle(FUEL_X_OFFSET, FUEL_Y_OFFSET, cellSize, cellSize, Inventory.INVENTORY_CELL_COLOR);
 		
 		int offset = (cellSize - Block.BLOCK_WIDTH) / 2;
 		// Smelting item
 		if (cookingItem != null) {
-			Inventory.renderItem(g, SMELTING_X_OFFSET + offset, SMELTING_Y_OFFSET + offset, cookingItem, false);
+			Inventory.renderItem(SMELTING_X_OFFSET + offset, SMELTING_Y_OFFSET + offset, cookingItem, false);
 		}
 		// Smelted item
 		if (cookedItem != null) {
-			Inventory.renderItem(g, SMELTED_X_OFFSET + offset, SMELTING_Y_OFFSET + offset, cookedItem, false);
+			Inventory.renderItem(SMELTED_X_OFFSET + offset, SMELTING_Y_OFFSET + offset, cookedItem, false);
 		}
 		// Fuel item
 		if (fuelItem != null) {
-			Inventory.renderItem(g, FUEL_X_OFFSET + offset, FUEL_Y_OFFSET + offset, fuelItem, false);
+			Inventory.renderItem(FUEL_X_OFFSET + offset, FUEL_Y_OFFSET + offset, fuelItem, false);
 		}
 		
 		// Render cooking arrow
 		float cookingRatio = 1 - ((float) cookingLeft / (float) cookingStartAmount);
-		g.setColor(Inventory.TOOLBAR_SELECTED_COLOR);
-		g.fillRect(SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-		g.setColor(Inventory.INVENTORY_CELL_COLOR);
-		g.fillRect(SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, (int) (Block.BLOCK_WIDTH * cookingRatio), Block.BLOCK_WIDTH);
+		Raylib.drawRectangle(SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, Inventory.TOOLBAR_SELECTED_COLOR);
+		Raylib.drawRectangle(SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, (int) (Block.BLOCK_WIDTH * cookingRatio), Block.BLOCK_WIDTH, Inventory.INVENTORY_CELL_COLOR);
 		
-		g.drawImage(Assets.arrow, SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+		RaylibUtils.draw(Assets.arrow, SMELTING_X_OFFSET + cellSize + 12, SMELTING_Y_OFFSET + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 	}
 	
 	public int getMouseHoveringSlot(int mX, int mY, boolean inventoryOpen) {

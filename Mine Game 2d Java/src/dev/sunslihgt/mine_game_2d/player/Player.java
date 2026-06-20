@@ -1,13 +1,14 @@
 package dev.sunslihgt.mine_game_2d.player;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-
+import com.raylib.Color;
+import com.raylib.Raylib;
+import com.raylib.Raylib.KeyboardKey;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
+import dev.sunslihgt.mine_game_2d.gfx.Text;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class Player {
@@ -21,7 +22,7 @@ public class Player {
 	private static final int JUMP_COOLDOWN = 75;
 	private static final int MAX_BASE_LIFE = 20;
 
-	private static final Color PLAYER_COLOR = new Color(0x023047);
+	private static final Color PLAYER_COLOR = RaylibUtils.CreateColor(0x023047);
 	
 	private static final int clickCooldown = 50;
 	private long lastRightClickTime = 0;
@@ -148,12 +149,12 @@ public class Player {
 			movingDown = true;
 
 		// Toggle inventory
-		if (handler.getKeyboardManager().keyJustPressed(KeyEvent.VK_E)) {
+		if (keyManager.keyJustPressed(KeyboardKey.KEY_E)) {
 			playerInventory.toggleinventory();
 		}
 
 		// Switch game mode
-		if (handler.getKeyboardManager().keyJustPressed(KeyEvent.VK_A)) {
+		if (keyManager.keyJustPressed(KeyboardKey.KEY_Q)) {
 			if (gameMode == GameMode.SURVIVAL) {
 				gameMode = GameMode.SPECTATOR;
 			} else if (gameMode == GameMode.SPECTATOR) {
@@ -249,7 +250,7 @@ public class Player {
 	private void checkMouseInput() {
 		boolean leftClicked = handler.getMouseManager().isLeftPressed();
 		boolean rightClicked = handler.getMouseManager().isRightPressed();
-		
+
 		// Left click
 		if (leftClicked) {
 			playerInventory.selectedItemLeftClick();
@@ -258,12 +259,12 @@ public class Player {
 		// Right click
 		if (rightClicked && lastRightClickTime + clickCooldown < System.currentTimeMillis()) {
 			lastRightClickTime = System.currentTimeMillis();
-			
+
 			// Try to use a block (eg: chest), else try to use an item (eg: place block)
 			if (!lastRightClicked) {
 				int playerCursorX = playerCursor.getbX();
 				int playerCursorY = playerCursor.getbY();
-				
+
 				if (!playerInventory.isMouseInInventory()) {
 					if (!handler.getWorld().rightClickBlock(playerCursorX, playerCursorY)) {
 						// Right click action of item
@@ -272,51 +273,58 @@ public class Player {
 						}
 					}
 				}
-				
+
 			} else {
 				// Right click action of item
 				if (playerInventory.hasSelectedToolbarItem()) {
 					playerInventory.selectedItemRightClick();
 				}
 			}
-			
+
 		}
-		
+
 //		lastLeftClicked = leftClicked;
 		lastRightClicked = rightClicked;
 	}
 
-	public void render(Graphics g) {
+	public void render() {
 		int xOffset = handler.getGameCamera().getXOffset();
 		int yOffset = handler.getGameCamera().getYOffset();
 
-		g.setColor(PLAYER_COLOR);
-		g.fillRect((int) (x - xOffset - PLAYER_WIDTH / 2), (int) (y - yOffset - PLAYER_HEIGHT), PLAYER_WIDTH, PLAYER_HEIGHT);
+		int drawX = (int) (x - xOffset - PLAYER_WIDTH / 2);
+		int drawY = (int) (y - yOffset - PLAYER_HEIGHT);
 
-		playerCursor.render(g);
+		// Debug player position
+		Raylib.drawRectangle(drawX, drawY, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_COLOR);
+		String debugText = "Player x=" + x + ", y=" + y + ", drawX=" + drawX + ", drawY=" + drawY;
+		Text.drawString(debugText, handler.getWidth() / 2, 160, false, true, Raylib.BLACK, Assets.inventory_font);
 
-		playerInventory.render(g);
+		playerCursor.renderBlockOutline();
+
+		playerInventory.render();
 
 		if (gameMode == GameMode.SURVIVAL) {
-			renderLife(g);
+			renderLife();
 		}
+
+		playerCursor.renderMouseCursor();
 	}
 
-	public void renderLife(Graphics g) {
+	public void renderLife() {
 		int xOffset = handler.getWidth() - 500;
 		int heartWidth = Assets.HEART_WIDTH;
 
 		for (int i = 0; i < 10; i++) {
 			if (i < hp / 2) {
-				g.drawImage(Assets.heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth, null);
+				RaylibUtils.draw(Assets.heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth);
 			} else if (i == hp / 2 && hp % 2 > 0) {
-				g.drawImage(Assets.half_heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth, null);
+				RaylibUtils.draw(Assets.half_heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth);
 			} else {
-				g.drawImage(Assets.empty_heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth, null);
+				RaylibUtils.draw(Assets.empty_heart, xOffset + i * heartWidth, 35, heartWidth, heartWidth);
 			}
 
 		}
-//		g.drawImage(Assets.half_heart, handler.getWidth() - xOffset + 48, 30, width, width, null);
+//		RaylibUtils.draw(Assets.half_heart, handler.getWidth() - xOffset + 48, 30, width, width);
 	}
 
 	public boolean checkCollisionBlockPos(int bX, int bY) {

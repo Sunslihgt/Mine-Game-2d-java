@@ -1,8 +1,8 @@
 package dev.sunslihgt.mine_game_2d.block;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import com.raylib.Texture;
 import dev.sunslihgt.mine_game_2d.block.block_types_list.AirBlock;
 import dev.sunslihgt.mine_game_2d.block.block_types_list.BackgroundAirBlock;
 import dev.sunslihgt.mine_game_2d.block.block_types_list.BackgroundDirtBlock;
@@ -51,7 +51,7 @@ public class BlockType {
 	
 	protected final int id;
 	protected String name;
-	protected BufferedImage texture;
+	protected Texture texture;
 	protected boolean transparent;
 	protected int lightEmited;
 	protected boolean collide;
@@ -62,7 +62,7 @@ public class BlockType {
 	
 	protected ArrayList<BlockDrop> blockDrops;
 	
-	public BlockType(int id, String name, BufferedImage texture, boolean transparent, int lightEmited, boolean collide, boolean background, int hardness, ToolType correctTool, int minToolLvl) {
+	public BlockType(int id, String name, Texture texture, boolean transparent, int lightEmited, boolean collide, boolean background, int hardness, ToolType correctTool, int minToolLvl) {
 		this.id = id;
 		this.name = name;
 		this.texture = texture;
@@ -85,7 +85,7 @@ public class BlockType {
 		return name;
 	}
 	
-	public BufferedImage getTexture() {
+	public Texture getTexture() {
 		return texture;
 	}
 

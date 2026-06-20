@@ -1,14 +1,15 @@
 package dev.sunslihgt.mine_game_2d.player;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.raylib.Raylib;
+import com.raylib.Color;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.Text;
 import dev.sunslihgt.mine_game_2d.item.Item;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class Inventory {
 	
@@ -32,9 +33,9 @@ public class Inventory {
 	private int toolbarScreenXOffset, toolbarScreenYOffset;
 	
 	// Colors
-	public final static Color INVENTORY_COLOR = new Color(220, 220, 220);
-	public final static Color INVENTORY_CELL_COLOR = new Color(150, 150, 150);
-	public final static Color TOOLBAR_SELECTED_COLOR = Color.white;
+	public final static Color INVENTORY_COLOR = RaylibUtils.CreateColor(220, 220, 220);
+	public final static Color INVENTORY_CELL_COLOR = RaylibUtils.CreateColor(150, 150, 150);
+	public final static Color TOOLBAR_SELECTED_COLOR = Raylib.WHITE;
 	
 	// Items
 	private Item[] items;
@@ -65,19 +66,18 @@ public class Inventory {
 		items = new Item[inventoryCellsAmount];
 	}
 	
-	public void render(Graphics g, boolean inventoryOpen) {
+	public void render(boolean inventoryOpen) {
 		if (hasToolbar) {
-			renderToolbar(g);
+			renderToolbar();
 		}
 		if (inventoryOpen) {
-			renderInventory(g);
+			renderInventory();
 		}
 	}
 	
-	private void renderToolbar(Graphics g) {
+	private void renderToolbar() {
 		// Background
-		g.setColor(INVENTORY_COLOR);
-		g.fillRect(toolbarScreenXOffset, toolbarScreenYOffset, toolbarScreenWidth, toolbarScreenHeight);
+		Raylib.drawRectangle(toolbarScreenXOffset, toolbarScreenYOffset, toolbarScreenWidth, toolbarScreenHeight, INVENTORY_COLOR);
 		
 		// Slots
 		for (int i = 0; i < inventoryWidth; i++) {
@@ -86,15 +86,13 @@ public class Inventory {
 				int selectedX = toolbarScreenXOffset + INVENTORY_SCREEN_BORDER + i * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) - 4;
 				int selectedY = toolbarScreenYOffset + INVENTORY_SCREEN_BORDER - 4;
 				int selectedSize = INVENTORY_SCREEN_CELL_SIZE + 4 * 2;
-				g.setColor(TOOLBAR_SELECTED_COLOR);
-				g.fillRect(selectedX, selectedY, selectedSize, selectedSize);
+				Raylib.drawRectangle(selectedX, selectedY, selectedSize, selectedSize, TOOLBAR_SELECTED_COLOR);
 			}
 			
 			// Cell
 			int cellX = toolbarScreenXOffset + INVENTORY_SCREEN_BORDER + i * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN);
 			int cellY = toolbarScreenYOffset + INVENTORY_SCREEN_BORDER;
-			g.setColor(INVENTORY_CELL_COLOR);
-			g.fillRect(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE);
+			Raylib.drawRectangle(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_CELL_COLOR);
 			
 			// Item
 			Item item = items[i];
@@ -102,15 +100,14 @@ public class Inventory {
 				int offset = INVENTORY_SCREEN_BORDER + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 				int itemX = toolbarScreenXOffset + i * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) + offset;
 				int itemY = toolbarScreenYOffset + offset;
-				renderItem(g, itemX, itemY, item, false);
+				renderItem(itemX, itemY, item, false);
 			}
 		}
 	}
 	
-	private void renderInventory(Graphics g) {
+	private void renderInventory() {
 		// Background
-		g.setColor(INVENTORY_COLOR);
-		g.fillRect(inventoryScreenXOffset, inventoryScreenYOffset, inventoryScreenWidth, inventoryScreenHeight);
+		Raylib.drawRectangle(inventoryScreenXOffset, inventoryScreenYOffset, inventoryScreenWidth, inventoryScreenHeight, INVENTORY_COLOR);
 		
 		// Slots
 		if (hasToolbar) {
@@ -121,8 +118,7 @@ public class Inventory {
 				// Cell
 				int cellX = inventoryScreenXOffset + INVENTORY_SCREEN_BORDER + slotX * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN);
 				int cellY = inventoryScreenYOffset + INVENTORY_SCREEN_BORDER + slotY * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN);
-				g.setColor(INVENTORY_CELL_COLOR);
-				g.fillRect(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE);
+				Raylib.drawRectangle(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_CELL_COLOR);
 				
 				// Item
 				Item item = items[i];
@@ -130,7 +126,7 @@ public class Inventory {
 					int offset = INVENTORY_SCREEN_BORDER + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 					int itemX = inventoryScreenXOffset + slotX * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) + offset;
 					int itemY = inventoryScreenYOffset + slotY * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) + offset;
-					renderItem(g, itemX, itemY, item, false);
+					renderItem(itemX, itemY, item, false);
 				}
 			}
 		} else { // No toolbar
@@ -141,8 +137,7 @@ public class Inventory {
 				// Cell
 				int cellX = inventoryScreenXOffset + INVENTORY_SCREEN_BORDER + slotX * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN);
 				int cellY = inventoryScreenYOffset + INVENTORY_SCREEN_BORDER + slotY * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN);
-				g.setColor(INVENTORY_CELL_COLOR);
-				g.fillRect(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE);
+				Raylib.drawRectangle(cellX, cellY, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_SCREEN_CELL_SIZE, INVENTORY_CELL_COLOR);
 				
 				// Item
 				Item item = items[i];
@@ -150,14 +145,14 @@ public class Inventory {
 					int offset = INVENTORY_SCREEN_BORDER + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 					int itemX = inventoryScreenXOffset + slotX * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) + offset;
 					int itemY = inventoryScreenYOffset + slotY * (INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_MARGIN) + offset;
-					renderItem(g, itemX, itemY, item, false);
+					renderItem(itemX, itemY, item, false);
 				}
 			}
 		}
 		
 	}
 	
-	public static void renderItem(Graphics g, int x, int y, Item item, boolean center) {
+	public static void renderItem(int x, int y, Item item, boolean center) {
 		if (item == null || item.getType().getTexture() == null) {
 			return;
 		}
@@ -165,22 +160,22 @@ public class Inventory {
 		if (center) {
 			x -= Block.BLOCK_WIDTH / 2;
 			y -= Block.BLOCK_WIDTH / 2;
-			g.drawImage(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+			RaylibUtils.draw(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 			
 			// Item count
 			if (item.getType().getMaxStack() != 1) {
 				int countX = x + Block.BLOCK_WIDTH + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 				int countY = y + Block.BLOCK_WIDTH - 2;
-				Text.drawString(g, Integer.toString(item.getCount()), countX, countY, true, true, Color.white, Assets.inventory_font);
+				Text.drawString(Integer.toString(item.getCount()), countX, countY, true, true, Raylib.WHITE, Assets.inventory_font);
 			}
 		} else {
-			g.drawImage(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
-			
+			RaylibUtils.draw(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+
 			// Item count
 			if (item.getType().getMaxStack() != 1) {
 				int countX = x + Block.BLOCK_WIDTH + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 				int countY = y + Block.BLOCK_WIDTH - 2;
-				Text.drawString(g, Integer.toString(item.getCount()), countX, countY, true, true, Color.white, Assets.inventory_font);
+				Text.drawString(Integer.toString(item.getCount()), countX, countY, true, true, Raylib.WHITE, Assets.inventory_font);
 			}
 		}
 	}
@@ -315,17 +310,17 @@ public class Inventory {
 			return false;
 		}
 	}
-	
+
 	// Move selected toolbar index (when using mouse wheel)
 	public void moveToolbarIndex(int move) {
-		selectedToolbarIndex += move;
+		selectedToolbarIndex -= move;
 		if (selectedToolbarIndex < 0) {
 			selectedToolbarIndex = inventoryWidth + selectedToolbarIndex;
 		} else if (selectedToolbarIndex >= inventoryWidth) {
 			selectedToolbarIndex = selectedToolbarIndex - inventoryWidth;
 		}
 	}
-	
+
 	public Item getItemWithIndex(int index) {
 		if (index < 0 || index >= inventoryCellsAmount) {
 			System.err.println("Index out of bounds in Inventory.getItemWithIndex(), index: " + index);
@@ -333,7 +328,7 @@ public class Inventory {
 		}
 		return items[index];
 	}
-	
+
 	public void setItemWithIndex(int index, Item item) {
 		if (index < 0 || index >= inventoryCellsAmount) {
 			System.err.println("Index out of bounds in Inventory.setItemWithIndex(), index: " + index);

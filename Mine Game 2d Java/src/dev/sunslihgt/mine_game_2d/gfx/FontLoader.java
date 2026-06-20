@@ -1,7 +1,8 @@
 package dev.sunslihgt.mine_game_2d.gfx;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
+import com.raylib.Font;
+import com.raylib.Raylib;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,8 +13,9 @@ public class FontLoader {
 			if (is == null) {
 				throw new IOException("Font resource not found on classpath: " + path);
 			}
-			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, size);
-		} catch (FontFormatException | IOException e) {
+			return Raylib.loadFont(path); // TODO: Use loadFontEx and specify font params
+//			return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, size);
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}

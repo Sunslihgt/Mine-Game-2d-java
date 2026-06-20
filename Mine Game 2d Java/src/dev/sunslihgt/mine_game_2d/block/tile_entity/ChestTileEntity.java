@@ -1,7 +1,5 @@
 package dev.sunslihgt.mine_game_2d.block.tile_entity;
 
-import java.awt.Graphics;
-
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.player.Inventory;
@@ -43,9 +41,9 @@ public class ChestTileEntity extends TileEntity {
 	}
 	
 	// Called by the player when the chest is opened
-	public void renderChestInventory(Graphics g) {
+	public void renderChestInventory() {
 		// Chest is rendered only if opened
-		chestInventory.render(g, true);
+		chestInventory.render(true);
 	}
 	
 	public Inventory getChestInventory() {

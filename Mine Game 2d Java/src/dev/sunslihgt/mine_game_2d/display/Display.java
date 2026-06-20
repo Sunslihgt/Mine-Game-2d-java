@@ -1,14 +1,8 @@
 package dev.sunslihgt.mine_game_2d.display;
 
-import java.awt.Canvas;
-import java.awt.Dimension;
-
-import javax.swing.JFrame;
+import com.raylib.Raylib;
 
 public class Display {
-
-	private JFrame frame;
-	private Canvas canvas;
 	
 	private String title;
 	private int width, height;
@@ -22,40 +16,10 @@ public class Display {
 	}
 	
 	private void createDisplay(){
-		// Frame
-		frame = new JFrame(title);
-		frame.setSize(width, height);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(false);
-		frame.setLocationRelativeTo(null);
-//		frame.setIconImage(Assets.wood);
-		frame.setVisible(true);
-		
-		// Canvas
-		canvas = new Canvas();
-		canvas.setPreferredSize(new Dimension(width, height));
-		canvas.setMaximumSize(new Dimension(width, height));
-		canvas.setMinimumSize(new Dimension(width, height));
-		canvas.setFocusable(false);
-		
-		frame.add(canvas);
-		
-		// Mouse Cursor
-//		Toolkit toolkit = Toolkit.getDefaultToolkit();
-//		Image cursorImage = new ImageIcon("res/textures/cursor/default cursor.png").getImage();
-//		Cursor cursor = toolkit.createCustomCursor(cursorImage, new Point(0, 0), "default cursor");
-//      frame.setCursor(cursor);
-//      frame.setVisible(true);
-		
-        // Save
-		frame.pack();
-	}
+		Raylib.initWindow(width, height, title);
+		System.out.println("Fullscreen: " + Raylib.isWindowFullscreen());
+		Raylib.setTargetFPS(60);
 
-	public Canvas getCanvas(){
-		return canvas;
-	}
-	
-	public JFrame getFrame(){
-		return frame;
+		Raylib.hideCursor();
 	}
 }

@@ -1,10 +1,10 @@
 package dev.sunslihgt.mine_game_2d.block;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.Item;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class Block {
 
@@ -34,14 +34,14 @@ public class Block {
 
 	}
 
-	public void render(Graphics g, int xOffset, int yOffset) {
+	public void render(int xOffset, int yOffset) {
 		if (type.getTexture() != null) {
 			// Texture
-			g.drawImage(type.getTexture(), x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH, null);
+			RaylibUtils.draw(type.getTexture(), x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH);
 
 			// Breaking texture
 			if (breakingStage > 0 && breakingStage - 1 < Assets.block_breaking.length) {
-				g.drawImage(Assets.block_breaking[breakingStage - 1], x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH, null);
+				RaylibUtils.draw(Assets.block_breaking[breakingStage - 1], x * BLOCK_WIDTH - xOffset, y * BLOCK_WIDTH - yOffset, BLOCK_WIDTH, BLOCK_WIDTH);
 			}
 		}
 

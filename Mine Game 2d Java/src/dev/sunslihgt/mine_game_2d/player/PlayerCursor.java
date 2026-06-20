@@ -1,34 +1,35 @@
 package dev.sunslihgt.mine_game_2d.player;
 
-import java.awt.Graphics;
-
+import com.raylib.Rectangle;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
+import dev.sunslihgt.mine_game_2d.input.MouseManager;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class PlayerCursor {
 
 	private int bX = 0, bY = 0;
 	private boolean visible = true;
-	
+
 	private Handler handler;
-	
+
 	public PlayerCursor(Handler handler) {
 		this.handler = handler;
 	}
-	
+
 	public void tick() {
 		bX = Utils.convertPixelToBlock(handler.getMouseManager().getMouseX() + handler.getGameCamera().getXOffset());
 		bY = Utils.convertPixelToBlock(handler.getMouseManager().getMouseY() + handler.getGameCamera().getYOffset());
-		
+
 		visible = !handler.getPlayer().getPlayerInventory().isMouseInInventory() && handler.getMouseManager().isMouseInScreen();
 		
 //		System.out.println("Mouse bX: " + bX + ", bY: " + bY);
 //		System.out.println(visible + ", mouse inv: " + handler.getPlayer().getPlayerInventory().isMouseInInventory() + ", mouse screen: " + handler.getMouseManager().isMouseInScreen());
 	}
 	
-	public void render(Graphics g) {
+	public void renderBlockOutline() {
 		// Do not render if mouse in inventory
 		if (!visible) {
 			return;
@@ -36,8 +37,14 @@ public class PlayerCursor {
 		
 		int x = Utils.convertBlockToPixel(bX) - handler.getGameCamera().getXOffset();
 		int y = Utils.convertBlockToPixel(bY) - handler.getGameCamera().getYOffset();
+		Rectangle pos = new Rectangle(x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 
-		g.drawImage(Assets.selectedBlockOutline, x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+		RaylibUtils.draw(Assets.selectedBlockOutline, Assets.defaultRectangle, pos);
+	}
+
+	public void renderMouseCursor() {
+		MouseManager mouseManager = handler.getMouseManager();
+		RaylibUtils.draw(Assets.mouse_cursor, mouseManager.getMouseX(), mouseManager.getMouseY(), Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 	}
 
 	public int getbX() {

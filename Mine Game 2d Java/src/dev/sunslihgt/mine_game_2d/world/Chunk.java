@@ -1,7 +1,5 @@
 package dev.sunslihgt.mine_game_2d.world;
 
-import java.awt.Graphics;
-
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
@@ -143,13 +141,13 @@ public class Chunk {
 		}
 	}
 
-	public void render(Graphics g, int xOffset, int yOffset) {
+	public void render(int xOffset, int yOffset) {
 		for (int x = 0; x < CHUNK_WIDTH; x++) {
 			for (int y = 0; y < CHUNK_HEIGHT; y++) {
 				if (blocks[x][y].getType().isTransparent()) {
-					backgroundBlocks[x][y].render(g, xOffset, yOffset);
+					backgroundBlocks[x][y].render(xOffset, yOffset);
 				}
-				blocks[x][y].render(g, xOffset, yOffset);
+				blocks[x][y].render(xOffset, yOffset);
 			}
 		}
 	}

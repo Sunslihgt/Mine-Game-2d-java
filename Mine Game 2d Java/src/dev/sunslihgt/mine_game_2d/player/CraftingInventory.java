@@ -1,13 +1,14 @@
 package dev.sunslihgt.mine_game_2d.player;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
+import com.raylib.Raylib;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipe;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipes;
+import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class CraftingInventory {
 	private final int INVENTORY_X_OFFSET = PlayerInventory.INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET = 270;
@@ -24,51 +25,48 @@ public class CraftingInventory {
 	}
 	
 	// Render crafting inventory
-	public void render(Graphics g, ArrayList<Item> availableItems) {
+	public void render(ArrayList<Item> availableItems) {
 		// Background
-		g.setColor(Inventory.INVENTORY_COLOR);
-		g.fillRect(INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET, INVENTORY_WIDTH, INVENTORY_HEIGHT);
+		Raylib.drawRectangle(INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET, INVENTORY_WIDTH, INVENTORY_HEIGHT, Inventory.INVENTORY_COLOR);
 		
 		// Categories
-		renderCategories(g);
+		renderCategories();
 		
 		// Crafts
-		renderCrafts(g, availableItems);
+		renderCrafts(availableItems);
 	}
 	
-	public void renderCategories(Graphics g) {
+	public void renderCategories() {
 		for (int x = 0; x <= 9; x++) {
 			if (x < 4) {
 				// Selected category
 				if (x == currentCategoryIndex) {
-					g.setColor(Inventory.TOOLBAR_SELECTED_COLOR);
 					int selectedX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN) - 4;
 					int selectedY = INVENTORY_Y_OFFSET + INVENTORY_BORDER - 4;
 					int selectedSize = CELL_SIZE + 8;
-					g.fillRect(selectedX, selectedY, selectedSize, selectedSize);
+					Raylib.drawRectangle(selectedX, selectedY, selectedSize, selectedSize, Inventory.TOOLBAR_SELECTED_COLOR);
 				}
 				// Cell
 				int cellX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN);
 				int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER;
-				
-				g.setColor(Inventory.INVENTORY_CELL_COLOR);
-				g.fillRect(cellX, cellY, CELL_SIZE, CELL_SIZE);
+
+				Raylib.drawRectangle(cellX, cellY, CELL_SIZE, CELL_SIZE, Inventory.INVENTORY_CELL_COLOR);
 				
 				int offset = (CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 				
 				// Categories
 				switch (x) {
 					case 0: // All
-						g.drawImage(Assets.grass_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+						RaylibUtils.draw(Assets.grass_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 						break;
 					case 1: // Tools
-						g.drawImage(Assets.stone_pickaxe_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+						RaylibUtils.draw(Assets.stone_pickaxe_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 						break;
 					case 2: // Blocks
-						g.drawImage(Assets.oak_plank_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+						RaylibUtils.draw(Assets.oak_plank_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 						break;
 					case 3: // Miscellaneous
-						g.drawImage(Assets.stick_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH, null);
+						RaylibUtils.draw(Assets.stick_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
 						break;
 					
 					default:
@@ -78,7 +76,7 @@ public class CraftingInventory {
 		}
 	}
 	
-	public void renderCrafts(Graphics g, ArrayList<Item> availableItems) {
+	public void renderCrafts(ArrayList<Item> availableItems) {
 		ArrayList<CraftingRecipe> availableCrafts = CraftingRecipes.getAvailableCraftsList(availableItems, currentCategoryIndex);
 				
 		for (int i = 0; i < 9 * 3; i++) {
@@ -88,9 +86,8 @@ public class CraftingInventory {
 			// Cell
 			int cellX = INVENTORY_X_OFFSET + INVENTORY_BORDER + slotX * (CELL_SIZE + INVENTORY_MARGIN);
 			int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER * 2 + CELL_SIZE + INVENTORY_MARGIN + slotY * (CELL_SIZE + INVENTORY_MARGIN);
-			
-			g.setColor(Inventory.INVENTORY_CELL_COLOR);
-			g.fillRect(cellX, cellY, CELL_SIZE, CELL_SIZE);
+
+			Raylib.drawRectangle(cellX, cellY, CELL_SIZE, CELL_SIZE, Inventory.INVENTORY_CELL_COLOR);
 			
 			if (availableCrafts.size() > i) {
 				int craftOffset = (CELL_SIZE - Block.BLOCK_WIDTH) / 2;
@@ -98,7 +95,7 @@ public class CraftingInventory {
 				int craftY = cellY + craftOffset;
 				
 				Item craftItem = availableCrafts.get(i).getCraftedItem();
-				Inventory.renderItem(g, craftX, craftY, craftItem, false);
+				Inventory.renderItem(craftX, craftY, craftItem, false);
 			}
 		}
 	}

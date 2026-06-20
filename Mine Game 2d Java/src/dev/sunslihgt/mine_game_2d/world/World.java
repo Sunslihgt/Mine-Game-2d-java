@@ -1,6 +1,5 @@
 package dev.sunslihgt.mine_game_2d.world;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import dev.sunslihgt.mine_game_2d.Handler;
@@ -123,8 +122,8 @@ public class World {
 		}
 	}
 
-	public void render(Graphics g) {
-		background.render(g);
+	public void render() {
+		background.render();
 
 		int xOffset = handler.getGameCamera().getXOffset();
 		int yOffset = handler.getGameCamera().getYOffset();
@@ -147,7 +146,7 @@ public class World {
 		// Render chunks
 		for (Chunk chunk : chunks) {
 			if (chunk.getChunkX() >= minChunkX && chunk.getChunkX() <= maxChunkX) {
-				chunk.render(g, xOffset, yOffset);
+				chunk.render(xOffset, yOffset);
 			}
 		}
 	}

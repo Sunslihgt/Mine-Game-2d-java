@@ -1,6 +1,5 @@
 package dev.sunslihgt.mine_game_2d.player;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import dev.sunslihgt.mine_game_2d.Handler;
@@ -85,13 +84,13 @@ public class PlayerInventory {
 	public void checkMouseInput() {
 		boolean leftClicked = handler.getMouseManager().isLeftPressed();
 		boolean rightClicked = handler.getMouseManager().isRightPressed();
-		
+
 		int mX = handler.getMouseManager().getMouseX();
 		int mY = handler.getMouseManager().getMouseY();
-		
+
 		// Mouse Wheel
 		inventory.moveToolbarIndex(handler.getMouseManager().getScroll());
-		
+
 		// Inventory
 		if (inventoryOpen) {
 			// Inventory
@@ -171,7 +170,7 @@ public class PlayerInventory {
 						availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
 					}
 					CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY, availableItems);
-					
+
 					if (craft != null) {
 						Item craftedItem = craft.getCraftedItem().getCopy();
 						if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
@@ -200,7 +199,7 @@ public class PlayerInventory {
 			else if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null && chestSelected.getChestInventory().isMouseInInventory(mX, mY, true)) { // Mouse not on inventory slot and chest open
 				Inventory chestInventory = chestSelected.getChestInventory();
 				int chestSlot = chestInventory.getMouseHoveringSlot(mX, mY, true);
-				
+
 				// Mouse on chest cell
 				if (chestSlot >= 0 && chestSlot < chestInventory.getInventoryCellsAmount()) {
 					Item chestItem = chestInventory.getItemWithIndex(chestSlot);
@@ -341,23 +340,23 @@ public class PlayerInventory {
 		} else { // Inventory closed
 			if (cursorSelectedItem != null) { // Item selected
 				// Drop or transfer item
-				
+
 				// Add items to inventory and store remaining items
 				@SuppressWarnings("unused")
 				Item itemsLeft = inventory.addItem(cursorSelectedItem);
 				cursorSelectedItem = null;
-				
+
 				// TODO: itemsLeft should be dropped
 			}
 		}
-		
+
 		lastLeftClick = leftClicked;
 		lastRightClick = rightClicked;
 	}
 	
-	public void render(Graphics g) {
+	public void render() {
 		// Render inventory and toolbar
-		inventory.render(g, inventoryOpen);
+		inventory.render(inventoryOpen);
 		
 		// Render crafting inventory
 		if (inventoryOpen) {
@@ -367,21 +366,21 @@ public class PlayerInventory {
 				availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
 			}
 			
-			craftingInventory.render(g, availableItems);
+			craftingInventory.render(availableItems);
 		}
 		
 		// Render open chest
 		if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
-			chestSelected.renderChestInventory(g);
+			chestSelected.renderChestInventory();
 		} else if (selectedInventory == OpenedInventoryEnum.FURNACE && furnaceSelected != null) {
-			furnaceSelected.renderFurnaceInventory(g);
+			furnaceSelected.renderFurnaceInventory();
 		}
 		
 		// Render cursor item
 		if (cursorSelectedItem != null) {
 			int mouseX = handler.getMouseManager().getMouseX();
 			int mouseY = handler.getMouseManager().getMouseY();
-			Inventory.renderItem(g, mouseX, mouseY, cursorSelectedItem, true);
+			Inventory.renderItem(mouseX, mouseY, cursorSelectedItem, true);
 		}
 	}
 	
@@ -420,13 +419,13 @@ public class PlayerInventory {
 	public boolean isMouseInInventory() {
 		int mX = handler.getMouseManager().getMouseX();
 		int mY = handler.getMouseManager().getMouseY();
-		
+
 		if (inventory.isMouseInInventory(mX, mY, inventoryOpen)) {
 			return true;
 		} else if (inventoryOpen && craftingInventory.isMouseInInventory(mX, mY)) {
 			return true;
 		}
-		
+
 		switch (selectedInventory) {
 			case CHEST:
 				return chestSelected.getChestInventory().isMouseInInventory(mX, mY, true);

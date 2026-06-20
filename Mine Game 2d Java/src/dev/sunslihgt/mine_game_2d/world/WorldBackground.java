@@ -1,6 +1,5 @@
 package dev.sunslihgt.mine_game_2d.world;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -81,7 +80,7 @@ public class WorldBackground {
 //		System.out.println("Clouds: " + clouds.size() + "\t max clouds: " + maxClouds);
 	}
 	
-	public void render(Graphics g) {
+	public void render() {
 		// Debug
 //		g.setColor(new Color(200, 100, 100));
 //		g.fillRect((int) (cloudsMinX - handler.getPlayer().getX() * cloudParallax), 10, cloudsMaxX - cloudsMinX, 90);
@@ -93,7 +92,7 @@ public class WorldBackground {
 //		g.fillRect((int) (screenRightX - handler.getPlayer().getX() * cloudParallax) - 10, 30, cloudsMaxX - screenRightX, 90);
 		
 		for (Cloud cloud : clouds) {
-			cloud.render(g);
+			cloud.render();
 		}
 	}
 	

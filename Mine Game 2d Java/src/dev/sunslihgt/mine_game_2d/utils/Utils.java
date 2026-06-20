@@ -1,9 +1,12 @@
 package dev.sunslihgt.mine_game_2d.utils;
 
+import com.raylib.Vector2;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.world.Chunk;
 
 public class Utils {
+	public final static Vector2 VECTOR_ZERO = new Vector2(0, 0);
+
 	// Block, Chunk and Chunk index conversion
 	public static int convertToChunkIndex(int bX) {
 		return Math.floorDiv(bX, Chunk.CHUNK_WIDTH);

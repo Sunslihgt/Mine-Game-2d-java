@@ -1,60 +1,44 @@
 package dev.sunslihgt.mine_game_2d.input;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import com.raylib.Raylib;
+import com.raylib.Raylib.KeyboardKey;
 
-public class KeyManager implements KeyListener {
-
+public class KeyManager {
+    private final static int KEYS_LENGTH = 512; // Actually 0-348 in Jaylib-FFM
 	private boolean[] keys, justPressed, cantPress;
 	public boolean up, down, left, right;
 
 	public KeyManager() {
-		keys = new boolean[256];
-		justPressed = new boolean[keys.length];
-		cantPress = new boolean[keys.length];
+		keys = new boolean[KEYS_LENGTH];
+		justPressed = new boolean[KEYS_LENGTH];
+		cantPress = new boolean[KEYS_LENGTH];
 	}
 
 	public void tick() {
-		for (int i = 0; i < keys.length; i++) {
-			if (cantPress[i] && !keys[i])
-				cantPress[i] = false;
-			else if (justPressed[i]) {
-				cantPress[i] = true;
-				justPressed[i] = false;
-			}
-			if (!cantPress[i] && keys[i]) {
-				justPressed[i] = true;
-			}
-		}
+        for (int i = 0; i < KEYS_LENGTH; i++) {
+            keys[i] = Raylib.isKeyDown(i);
+            if (cantPress[i] && !keys[i])
+                cantPress[i] = false;
+            else if (justPressed[i]) {
+                cantPress[i] = true;
+                justPressed[i] = false;
+            }
+            if (!cantPress[i] && keys[i]) {
+                justPressed[i] = true;
+            }
+        }
 
-		up = keys[KeyEvent.VK_Z];
-		down = keys[KeyEvent.VK_S];
-		left = keys[KeyEvent.VK_Q];
-		right = keys[KeyEvent.VK_D];
-	}
+        // Quick access to the movement keys
+        up = keys[KeyboardKey.KEY_W];
+        down = keys[KeyboardKey.KEY_S];
+        left = keys[KeyboardKey.KEY_A];
+        right = keys[KeyboardKey.KEY_D];
+
+    }
 
 	public boolean keyJustPressed(int keyCode) {
-		if (keyCode < 0 || keyCode >= keys.length)
+		if (keyCode < 0 || keyCode >= KEYS_LENGTH)
 			return false;
 		return justPressed[keyCode];
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() < 0 || e.getKeyCode() >= keys.length)
-			return;
-		keys[e.getKeyCode()] = true;
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() < 0 || e.getKeyCode() >= keys.length)
-			return;
-		keys[e.getKeyCode()] = false;
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-
 	}
 }
