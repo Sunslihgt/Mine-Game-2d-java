@@ -17,20 +17,21 @@ public class Inventory {
 	public final static int INVENTORY_SCREEN_CELL_SIZE = 40;
 	public final static int INVENTORY_SCREEN_MARGIN = 8, INVENTORY_SCREEN_BORDER = 8;
 	
-	private int inventoryScreenWidth;
-	private int inventoryScreenHeight;
+	private final int inventoryScreenWidth;
+	private final int inventoryScreenHeight;
 	
-	private int inventoryWidth, inventoryHeight, inventoryCellsAmount;
-	private int inventoryScreenXOffset, inventoryScreenYOffset;
+	private final int inventoryWidth, inventoryHeight;
+	private int inventoryCellsAmount;
+	private final int inventoryScreenXOffset, inventoryScreenYOffset;
 	
 	// Toolbar
-	private boolean hasToolbar;
+	private final boolean hasToolbar;
 	private int selectedToolbarIndex = 0;
 	
-	private int toolbarScreenWidth;
-	private int toolbarScreenHeight = INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_BORDER * 2;
+	private final int toolbarScreenWidth;
+	private final int toolbarScreenHeight = INVENTORY_SCREEN_CELL_SIZE + INVENTORY_SCREEN_BORDER * 2;
 	
-	private int toolbarScreenXOffset, toolbarScreenYOffset;
+	private final int toolbarScreenXOffset, toolbarScreenYOffset;
 	
 	// Colors
 	public final static Color INVENTORY_COLOR = RaylibUtils.createColor(220, 220, 220);
@@ -38,7 +39,7 @@ public class Inventory {
 	public final static Color TOOLBAR_SELECTED_COLOR = Raylib.WHITE;
 	
 	// Items
-	private Item[] items;
+	private final Item[] items;
 	
 	public Inventory(int inventoryWidth, int inventoryHeight, boolean hasToolbar, int inventoryScreenXOffset, int inventoryScreenYOffset, int toolbarScreenYOffset) {
 		
@@ -185,11 +186,11 @@ public class Inventory {
 		// Try to combine with already existing items
 		for (int i = 0; i < inventoryCellsAmount; i++) {
 			if (items[i] != null && items[i].getId() == item.getId()) {
-				int itemsTransfered = Math.min(item.getCount() + items[i].getCount(), item.getType().getMaxStack()) - items[i].getCount();
-				items[i].addCount(itemsTransfered);
+				int itemsTransferred = Math.min(item.getCount() + items[i].getCount(), item.getType().getMaxStack()) - items[i].getCount();
+				items[i].addCount(itemsTransferred);
 				
-				if (itemsTransfered < item.getCount()) {
-					item.addCount(-itemsTransfered);
+				if (itemsTransferred < item.getCount()) {
+					item.addCount(-itemsTransferred);
 				} else {
 					return null;
 				}
@@ -210,32 +211,32 @@ public class Inventory {
 	// Add items to inventory
 	public ArrayList<Item> addItemList(ArrayList<Item> newItems) {
 		for (Iterator<Item> itemsIterator = newItems.iterator(); itemsIterator.hasNext();) {
-			Item item = (Item) itemsIterator.next();
+			Item item = itemsIterator.next();
 			
-			boolean transfered = false;
+			boolean transferred = false;
 			// Try to combine with already existing items
 			for (int i = 0; i < inventoryCellsAmount; i++) {
 				if (items[i] != null && items[i].getId() == item.getId()) {
-					int itemsTransfered = Math.min(item.getCount() + items[i].getCount(), item.getType().getMaxStack()) - items[i].getCount();
-					items[i].addCount(itemsTransfered);
+					int itemsTransferred = Math.min(item.getCount() + items[i].getCount(), item.getType().getMaxStack()) - items[i].getCount();
+					items[i].addCount(itemsTransferred);
 					
-					if (itemsTransfered < item.getCount()) {
-						item.addCount(-itemsTransfered);
+					if (itemsTransferred < item.getCount()) {
+						item.addCount(-itemsTransferred);
 					} else {
 						itemsIterator.remove();
-						transfered = true;
+						transferred = true;
 						break;
 					}
 				}
 			}
 			
-			if (!transfered) {
+			if (!transferred) {
 				// Try to fill empty spaces
 				for (int i = 0; i < inventoryCellsAmount; i++) {
 					if (items[i] == null) {
 						items[i] = item;
 						itemsIterator.remove();
-						transfered = true;
+						transferred = true;
 						break;
 					}
 				}
@@ -344,18 +345,18 @@ public class Inventory {
 		return items[selectedToolbarIndex];
 	}
 	
-	public void setSelectedToulbarItem(Item item) {
+	public void setSelectedToolbarItem(Item item) {
 		items[selectedToolbarIndex] = item;
 	}
 	
 	// Return the number of items of a chosen id
 	public int countItemId(int id) {
 		int count = 0;
-		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && items[i].getId() == id) {
-				count += items[i].getCount();
-			}
-		}
+        for (Item item : items) {
+            if (item != null && item.getId() == id) {
+                count += item.getCount();
+            }
+        }
 		return count;
 	}
 	

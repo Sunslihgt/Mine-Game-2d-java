@@ -4,35 +4,36 @@ import com.raylib.Texture;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.item.item_types_list.*;
 
+@SuppressWarnings("StaticInitializerReferencesSubClass")
 public abstract class ItemType {
 
 	// Item types list
-	public static ItemType[] itemTypes = new ItemType[256];
-	public static ItemType dirtItem = new DirtItem(0);
-	public static ItemType grassItem = new GrassItem(1);
-	public static ItemType stoneItem = new StoneItem(2);
-	public static ItemType coalOreItem = new CoalOreItem(3);
-	public static ItemType ironOreItem = new IronOreItem(4);
-	public static ItemType rubyOreItem = new RubyOreItem(5);
-	public static ItemType woodenPickaxeItem = new WoodenPickaxeItem(6);
-	public static ItemType stonePickaxeItem = new StonePickaxeItem(7);
-	public static ItemType ironPickaxeItem = new IronPickaxeItem(8);
-	public static ItemType torchItem = new TorchItem(9);
-	public static ItemType chestItem = new ChestItem(10);
-	public static ItemType furnaceItem = new FurnaceItem(11);
-	public static ItemType coalItem = new CoalItem(12);
-	public static ItemType ironIngotItem = new IronIngotItem(13);
-	public static ItemType rubyItem = new RubyItem(14);
-	public static ItemType stickItem = new StickItem(15);
-	public static ItemType oakWoodItem = new OakWoodItem(16);
-	public static ItemType oakPlankItem = new OakPlankItem(17);
-	public static ItemType oakLeavesItem = new OakLeavesItem(18);
-	public static ItemType woodenAxeItem = new WoodenAxeItem(19);
-	public static ItemType stoneAxeItem = new StoneAxeItem(20);
-	public static ItemType ironAxeItem = new IronAxeItem(21);
-	public static ItemType woodenShovelItem = new WoodenShovelItem(22);
-	public static ItemType stoneShovelItem = new StoneShovelItem(23);
-	public static ItemType ironShovelItem = new IronShovelItem(24);
+	public static final ItemType[] itemTypes = new ItemType[256];
+	public static final ItemType dirtItem = new DirtItemType(0);
+	public static final ItemType grassItem = new GrassItemType(1);
+	public static final ItemType stoneItem = new StoneItemType(2);
+	public static final ItemType coalOreItem = new CoalOreItemType(3);
+	public static final ItemType ironOreItem = new IronOreItemType(4);
+	public static final ItemType rubyOreItem = new RubyOreItemType(5);
+	public static final ItemType woodenPickaxeItem = new WoodenPickaxeItemType(6);
+	public static final ItemType stonePickaxeItem = new StonePickaxeItemType(7);
+	public static final ItemType ironPickaxeItem = new IronPickaxeItemType(8);
+	public static final ItemType torchItem = new TorchItemType(9);
+	public static final ItemType chestItem = new ChestItemType(10);
+	public static final ItemType furnaceItem = new FurnaceItemType(11);
+	public static final ItemType coalItem = new CoalItemType(12);
+	public static final ItemType ironIngotItem = new IronIngotItemType(13);
+	public static final ItemType rubyItem = new RubyItemType(14);
+	public static final ItemType stickItem = new StickItemType(15);
+	public static final ItemType oakWoodItem = new OakWoodItemType(16);
+	public static final ItemType oakPlankItem = new OakPlankItemType(17);
+	public static final ItemType oakLeavesItem = new OakLeavesItemType(18);
+	public static final ItemType woodenAxeItem = new WoodenAxeItemType(19);
+	public static final ItemType stoneAxeItem = new StoneAxeItemType(20);
+	public static final ItemType ironAxeItem = new IronAxeItemType(21);
+	public static final ItemType woodenShovelItem = new WoodenShovelItemType(22);
+	public static final ItemType stoneShovelItem = new StoneShovelItemType(23);
+	public static final ItemType ironShovelItem = new IronShovelItemType(24);
 	
 
 	// ItemType class

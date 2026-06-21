@@ -16,7 +16,7 @@ import dev.sunslihgt.mine_game_2d.world.World;
 
 public class Game {
 
-	private int width, height;
+	private final int width, height;
 
 	private boolean running = false;
 
@@ -41,8 +41,8 @@ public class Game {
 	private GameCamera gameCamera;
 	
 	// Input
-	private KeyManager keyManager;
-	private MouseManager mouseManager;
+	private final KeyManager keyManager;
+	private final MouseManager mouseManager;
 	
 	public Game(int width, int height) {
 		this.width = width;
@@ -70,7 +70,7 @@ public class Game {
 		init();
 
 		final int fps = 60;
-		double timePerTick = 1000000000 / fps;
+		double timePerTick = 1000000000d / fps;
 		// double delta = 0;
 		long now;
 		long lastTime = System.nanoTime();

@@ -8,8 +8,8 @@ import dev.sunslihgt.mine_game_2d.Handler;
 
 public class WorldBackground {
 	
-	private ArrayList<Cloud> clouds = new ArrayList<>();
-	private Handler handler;
+	private final ArrayList<Cloud> clouds = new ArrayList<>();
+	private final Handler handler;
 	
 	private final float cloudParallax = 0.04f;
 	
@@ -41,7 +41,7 @@ public class WorldBackground {
 	public void spawnCloud() { // Spawn cloud outside screen
 		Random r = new Random();
 		
-		float spawnX = 0;
+		float spawnX;
 		if (r.nextInt(10) < 7) { // Spawn left
 			spawnX = r.nextFloat() * (screenLeftX - cloudsMinX) + cloudsMinX;
 		} else { // Spawn right
@@ -63,7 +63,7 @@ public class WorldBackground {
 		screenRightX = (int) (handler.getPlayer().getX() * cloudParallax + handler.getWidth());
 		
 		for (Iterator<Cloud> iterator = clouds.iterator(); iterator.hasNext();) {
-			Cloud cloud = (Cloud) iterator.next();
+			Cloud cloud = iterator.next();
 			cloud.tick();
 			float cloudX = cloud.getX();
 			

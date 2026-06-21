@@ -17,7 +17,7 @@ public class CookingRecipes {
 	
 	public static boolean isCookable(ItemType itemType) {
 		for (CookingRecipe cookingRecipe : smeltingRecipes) {
-			if (cookingRecipe.getCookingItem() == itemType) {
+			if (cookingRecipe.cookingItem() == itemType) {
 				return true;
 			}
 		}
@@ -26,8 +26,8 @@ public class CookingRecipes {
 	
 	public static ItemType getCookedItemType(ItemType cookingItemType) {
 		for (CookingRecipe cookingRecipe : smeltingRecipes) {
-			if (cookingRecipe.getCookingItem() == cookingItemType) {
-				return cookingRecipe.getCookedItem();
+			if (cookingRecipe.cookingItem() == cookingItemType) {
+				return cookingRecipe.cookedItem();
 			}
 		}
 		System.err.println("Unknown item type cooked in ItemType.getCookedItemType, cookingItemType: " + cookingItemType);
@@ -36,8 +36,8 @@ public class CookingRecipes {
 	
 	public static int getCookedItemCount(ItemType cookingItemType) {
 		for (CookingRecipe cookingRecipe : smeltingRecipes) {
-			if (cookingRecipe.getCookingItem() == cookingItemType) {
-				return cookingRecipe.getCount();
+			if (cookingRecipe.cookingItem() == cookingItemType) {
+				return cookingRecipe.count();
 			}
 		}
 		System.err.println("Unknown item type cooked in ItemType.getCookedItemCount, cookingItemType: " + cookingItemType);

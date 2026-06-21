@@ -38,7 +38,7 @@ public class Player {
 
 	private boolean movingUp = false, movingDown = false, movingLeft = false, movingRight = false;
 
-	private Handler handler;
+	private final Handler handler;
 
 	private PlayerCursor playerCursor;
 	private PlayerInventory playerInventory;
@@ -103,11 +103,7 @@ public class Player {
 				else
 					velY = 0;
 
-			// Move
-			x += velX;
-			y += velY;
-
-		} else { // Survival mode
+        } else { // Survival mode
 			// Jump
 			long now = System.currentTimeMillis();
 			if (movingUp && touchingGround && touchingGroundTime + JUMP_COOLDOWN < now) {
@@ -125,10 +121,12 @@ public class Player {
 
 //			System.out.println(velX + " " + velY);
 
-			x += velX;
-			y += velY;
-		}
-	}
+        }
+
+		// Move
+        x += velX;
+        y += velY;
+    }
 
 	private void checkKeyboardInput() {
 		movingUp = false;
@@ -150,7 +148,7 @@ public class Player {
 
 		// Toggle inventory
 		if (keyManager.keyJustPressed(KeyboardKey.KEY_E)) {
-			playerInventory.toggleinventory();
+			playerInventory.toggleInventory();
 		}
 
 		// Switch game mode
@@ -202,7 +200,7 @@ public class Player {
 		for (int blockBX = playerBX - 1; blockBX <= playerBX + 1; blockBX++) {
 			for (int blockBY = playerBY - 2; blockBY <= playerBY + 1; blockBY++) {
 				Block block = handler.getWorld().getBlock(blockBX, blockBY);
-				if (block != null && block.getType().isCollide()) { // Block exists and can collide
+				if (block != null && block.getType().hasCollider()) { // Block exists and can collide
 					// Get block and sides coordinates
 					int blockPX = Utils.convertBlockToPixel(blockBX);
 					int blockPY = Utils.convertBlockToPixel(blockBY);

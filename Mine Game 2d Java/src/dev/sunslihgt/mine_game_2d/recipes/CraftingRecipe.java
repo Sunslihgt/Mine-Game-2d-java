@@ -5,17 +5,7 @@ import java.util.ArrayList;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipes.RecipeCategory;
 
-public class CraftingRecipe {
-	
-	private ArrayList<Item> itemsCost;
-	private Item craftedItem;
-	private RecipeCategory category;
-	
-	public CraftingRecipe(ArrayList<Item> itemsCost, Item craftedItem, RecipeCategory category) {
-		this.itemsCost = itemsCost;
-		this.craftedItem = craftedItem;
-		this.category = category;
-	}
+public record CraftingRecipe(ArrayList<Item> itemsCost, Item craftedItem, RecipeCategory category) {
 
 	// Return a copy of the items costs
 	public ArrayList<Item> getItemsCostCopy() {
@@ -26,15 +16,4 @@ public class CraftingRecipe {
 		return itemsCostCopy;
 	}
 
-	public ArrayList<Item> getItemsCost() {
-		return itemsCost;
-	}
-
-	public Item getCraftedItem() {
-		return craftedItem;
-	}
-	
-	public RecipeCategory getCategory() {
-		return category;
-	}
 }

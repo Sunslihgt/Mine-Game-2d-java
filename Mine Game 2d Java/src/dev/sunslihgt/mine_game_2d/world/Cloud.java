@@ -2,7 +2,6 @@ package dev.sunslihgt.mine_game_2d.world;
 
 import java.util.Random;
 
-import com.raylib.Raylib;
 import com.raylib.Rectangle;
 import com.raylib.Texture;
 import dev.sunslihgt.mine_game_2d.Handler;
@@ -11,14 +10,15 @@ import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class Cloud {
 
-	private float x, y;
-	private float speed;
-	private int width, height;
-	private float parallax;
-	private Texture texture;
-	private Rectangle textureRect;
+	private float x;
+    private final float y;
+	private final float speed;
+	private final int width, height;
+	private final float parallax;
+	private final Texture texture;
+	private final Rectangle textureRect;
 	
-	private Handler handler;
+	private final Handler handler;
 	
 	public Cloud(float x, float y, float speed, int sizeIndex, float parallax, Handler handler) {
 		this.x = x;

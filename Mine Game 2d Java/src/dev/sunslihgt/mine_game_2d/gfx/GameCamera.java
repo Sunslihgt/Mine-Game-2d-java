@@ -10,8 +10,8 @@ public class GameCamera {
 
 	private int xOffset, yOffset;
 	private int minRenderBX, minRenderBY;
-	private int renderBWidth, renderBHeight;
-	private Handler handler;
+	private final int renderBWidth, renderBHeight;
+	private final Handler handler;
 
 	public GameCamera(Handler handler) {
 		this.handler = handler;
@@ -24,8 +24,8 @@ public class GameCamera {
 		// TODO: use Raylib's camera system
 		Player player = handler.getPlayer();
 
-		xOffset = (int) (player.getX() - handler.getGame().getWidth() / 2);
-		yOffset = (int) (player.getY() - handler.getGame().getHeight() / 2);
+		xOffset = (int) player.getX() - handler.game().getWidth() / 2;
+		yOffset = (int) player.getY() - handler.game().getHeight() / 2;
 
 		minRenderBX = Utils.convertPixelToBlock(xOffset) - addedRenderDistance;
 		minRenderBY = Utils.convertPixelToBlock(yOffset) - addedRenderDistance;

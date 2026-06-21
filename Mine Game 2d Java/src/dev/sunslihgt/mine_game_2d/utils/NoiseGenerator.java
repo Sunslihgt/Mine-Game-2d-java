@@ -13,7 +13,6 @@ public class NoiseGenerator {
 	private double seed;
 	private long default_size;
 	private int[] p;
-	private int[] permutation;
 
 	public NoiseGenerator(double seed) {
 		this.seed = seed;
@@ -28,7 +27,7 @@ public class NoiseGenerator {
 	private void init() {
 		// Initialize the permutation array.
 		this.p = new int[512];
-		this.permutation = new int[] { 151, 160, 137, 91, 90, 15, 131, 13, 201,
+		int[] permutation = new int[] { 151, 160, 137, 91, 90, 15, 131, 13, 201,
 				95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99,
 				37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26,
 				197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88,
@@ -71,7 +70,7 @@ public class NoiseGenerator {
 
 		while (size >= 1) {
 			value += smoothNoise((x / size), (y / size), (z / size)) * size;
-			size /= 2.0;
+			size /= 2;
 		}
 
 		return value / initialSize;

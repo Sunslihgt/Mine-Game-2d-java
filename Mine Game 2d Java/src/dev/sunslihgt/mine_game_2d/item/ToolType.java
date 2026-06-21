@@ -4,5 +4,5 @@ public enum ToolType {
 	NONE,
 	SHOVEL,
 	PICKAXE,
-	AXE;
+	AXE
 }

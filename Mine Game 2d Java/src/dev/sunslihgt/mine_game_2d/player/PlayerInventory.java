@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
-import dev.sunslihgt.mine_game_2d.block.tile_entity.ChestTileEntity;
-import dev.sunslihgt.mine_game_2d.block.tile_entity.FurnaceTileEntity;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntityType;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntityType;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipe;
@@ -24,13 +24,13 @@ public class PlayerInventory {
 	private Item cursorSelectedItem;
 	
 	// Enum of possible opened inventories
-	public static enum OpenedInventoryEnum {
+	public enum OpenedInventoryEnum {
 		CHEST, FURNACE, NONE
 	}
 	
 	private OpenedInventoryEnum selectedInventory = OpenedInventoryEnum.NONE;
-	private ChestTileEntity chestSelected;
-	private FurnaceTileEntity furnaceSelected;
+	private ChestTileEntityType chestSelected;
+	private FurnaceTileEntityType furnaceSelected;
 	
 	private boolean lastLeftClick = false, lastRightClick = false;
 
@@ -166,7 +166,7 @@ public class PlayerInventory {
 			}
 			// Crafting inventory
 			else if (craftingInventory.isMouseInInventory(mX, mY)) {
-				if (((leftClicked && !lastLeftClick) || (leftClicked && !lastLeftClick)) && !craftingInventory.clickCategory(mX, mY)) {
+				if ((leftClicked && !lastLeftClick) && !craftingInventory.clickCategory(mX, mY)) {
 					ArrayList<Item> availableItems = inventory.getItemsListCopy();
 					if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
 						availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
@@ -174,7 +174,7 @@ public class PlayerInventory {
 					CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY, availableItems);
 
 					if (craft != null) {
-						Item craftedItem = craft.getCraftedItem().getCopy();
+						Item craftedItem = craft.craftedItem().getCopy();
 						if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
 							if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
 								if (craftingInventory.consumeCraftItems(craft, inventory, chestSelected.getChestInventory())) {
@@ -409,7 +409,7 @@ public class PlayerInventory {
 		if (handler.getPlayer().getPlayerCursor().isCursorVisible()) {
 			boolean consumeItems = inventory.getSelectedToolbarItem().rightClickAction(handler);
 			if (consumeItems) {
-				inventory.setSelectedToulbarItem(null);
+				inventory.setSelectedToolbarItem(null);
 			}
 		}
 		
@@ -431,17 +431,14 @@ public class PlayerInventory {
 			return true;
 		}
 
-		switch (selectedInventory) {
-			case CHEST:
-				return chestSelected.getChestInventory().isMouseInInventory(mX, mY, true);
-			case FURNACE:
-				return furnaceSelected.isMouseInInventory(mX, mY);
-			default:
-				return false;
-		}
+        return switch (selectedInventory) {
+            case CHEST -> chestSelected.getChestInventory().isMouseInInventory(mX, mY, true);
+            case FURNACE -> furnaceSelected.isMouseInInventory(mX, mY);
+            default -> false;
+        };
 	}
 	
-	public void toggleinventory() {
+	public void toggleInventory() {
 		inventoryOpen = !inventoryOpen;
 		if (!inventoryOpen) {
 			selectedInventory = OpenedInventoryEnum.NONE;
@@ -476,19 +473,19 @@ public class PlayerInventory {
 		this.selectedInventory = selectedInventory;
 	}
 	
-	public ChestTileEntity getChestSelected() {
+	public ChestTileEntityType getChestSelected() {
 		return chestSelected;
 	}
 	
-	public void setChestSelected(ChestTileEntity chestSelected) {
+	public void setChestSelected(ChestTileEntityType chestSelected) {
 		this.chestSelected = chestSelected;
 	}
 	
-	public FurnaceTileEntity getFurnaceSelected() {
+	public FurnaceTileEntityType getFurnaceSelected() {
 		return furnaceSelected;
 	}
 	
-	public void setFurnaceSelected(FurnaceTileEntity furnaceSelected) {
+	public void setFurnaceSelected(FurnaceTileEntityType furnaceSelected) {
 		this.furnaceSelected = furnaceSelected;
 	}
 }

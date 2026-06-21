@@ -13,7 +13,7 @@ public class PlayerCursor {
 	private int bX = 0, bY = 0;
 	private boolean visible = true;
 
-	private Handler handler;
+	private final Handler handler;
 
 	public PlayerCursor(Handler handler) {
 		this.handler = handler;

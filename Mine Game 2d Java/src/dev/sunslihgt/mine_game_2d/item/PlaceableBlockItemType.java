@@ -9,7 +9,7 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import java.io.InvalidClassException;
 
 public abstract class PlaceableBlockItemType extends ItemType {
-	protected BlockType blockTypeToPlace;
+	protected final BlockType blockTypeToPlace;
 
 	public PlaceableBlockItemType(int id, String name, Texture texture, int maxStack, ToolType toolType, int toolLvl, float toolEfficiency, float fuelBurnTime, BlockType blockToPlace) {
 		super(id, name, texture, maxStack, toolType, toolLvl, toolEfficiency, fuelBurnTime);

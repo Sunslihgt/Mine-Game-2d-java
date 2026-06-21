@@ -48,7 +48,7 @@ public class CraftingRecipes {
 	}
 	
 	public static boolean isCraftAffordable(CraftingRecipe craft, ArrayList<Item> itemsAvailable) {
-		ArrayList<Item> craftCost = craft.getItemsCost();
+		ArrayList<Item> craftCost = craft.itemsCost();
 		
 		for (Item craftItem : craftCost) {
 			int itemRemaining = craftItem.getCount();
@@ -56,7 +56,7 @@ public class CraftingRecipes {
 				if (itemRemaining <= 0) {
 					break;
 				}
-				Item availableItem = (Item) iterator.next();
+				Item availableItem = iterator.next();
 				if (craftItem.getId() == availableItem.getId()) {
 					int itemUsed = Math.min(itemRemaining, availableItem.getCount());
 					itemRemaining -= itemUsed;
@@ -79,12 +79,7 @@ public class CraftingRecipes {
 	// Return a list containing every affordable crafts
 	public static ArrayList<CraftingRecipe> getAvailableCraftsList(ArrayList<Item> itemsAvailable) {
 		ArrayList<CraftingRecipe> availableCrafts = new ArrayList<CraftingRecipe>(craftingRecipes);
-		for (Iterator<CraftingRecipe> iterator = availableCrafts.iterator(); iterator.hasNext();) {
-			CraftingRecipe craftingRecipe = (CraftingRecipe) iterator.next();
-			if (!isCraftAffordable(craftingRecipe, itemsAvailable)) {
-				iterator.remove();
-			}
-		}
+        availableCrafts.removeIf(craftingRecipe -> !isCraftAffordable(craftingRecipe, itemsAvailable));
 		return availableCrafts;
 	}
 	
@@ -95,7 +90,7 @@ public class CraftingRecipes {
 		ArrayList<CraftingRecipe> availableCrafts = new ArrayList<CraftingRecipe>(craftingRecipes);
 		for (Iterator<CraftingRecipe> iterator = availableCrafts.iterator(); iterator.hasNext();) {
 			CraftingRecipe craftingRecipe = (CraftingRecipe) iterator.next();
-			if (category != RecipeCategory.ALL && category != craftingRecipe.getCategory()) {
+			if (category != RecipeCategory.ALL && category != craftingRecipe.category()) {
 				iterator.remove();
 			} else if (!isCraftAffordable(craftingRecipe, itemsAvailable)) {
 				iterator.remove();
@@ -111,16 +106,11 @@ public class CraftingRecipes {
 	}
 	
 	public static RecipeCategory getRecipeCategory(int categoryIndex) {
-		switch (categoryIndex) {
-			case 1:
-				return RecipeCategory.TOOL;
-			case 2:
-				return RecipeCategory.BLOCK;
-			case 3:
-				return RecipeCategory.MISCELLANEOUS;
-			default:
-				return RecipeCategory.ALL;
-			
-		}
+        return switch (categoryIndex) {
+            case 1 -> RecipeCategory.TOOL;
+            case 2 -> RecipeCategory.BLOCK;
+            case 3 -> RecipeCategory.MISCELLANEOUS;
+            default -> RecipeCategory.ALL;
+        };
 	}
 }

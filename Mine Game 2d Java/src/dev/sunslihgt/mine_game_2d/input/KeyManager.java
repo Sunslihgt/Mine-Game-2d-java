@@ -5,7 +5,7 @@ import com.raylib.Raylib.KeyboardKey;
 
 public class KeyManager {
     private final static int KEYS_LENGTH = 512; // Actually 0-348 in Jaylib-FFM
-	private boolean[] keys, justPressed, cantPress;
+	private final boolean[] keys, justPressed, cantPress;
 	public boolean up, down, left, right;
 
 	public KeyManager() {

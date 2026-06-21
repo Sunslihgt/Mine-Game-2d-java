@@ -17,7 +17,8 @@ public class CraftingInventory {
 	private final int CELL_SIZE = Inventory.INVENTORY_SCREEN_CELL_SIZE;
 	private final int INVENTORY_MARGIN = Inventory.INVENTORY_SCREEN_MARGIN;
 	private final int INVENTORY_BORDER = Inventory.INVENTORY_SCREEN_BORDER;
-	
+
+	private final int CATEGORY_COUNT = 4;
 	private int currentCategoryIndex = 0;
 	
 	public CraftingInventory() {
@@ -37,41 +38,39 @@ public class CraftingInventory {
 	}
 	
 	public void renderCategories() {
-		for (int x = 0; x <= 9; x++) {
-			if (x < 4) {
-				// Selected category
-				if (x == currentCategoryIndex) {
-					int selectedX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN) - 4;
-					int selectedY = INVENTORY_Y_OFFSET + INVENTORY_BORDER - 4;
-					int selectedSize = CELL_SIZE + 8;
-					Raylib.drawRectangle(selectedX, selectedY, selectedSize, selectedSize, Inventory.TOOLBAR_SELECTED_COLOR);
-				}
-				// Cell
-				int cellX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN);
-				int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER;
+		for (int x = 0; x < CATEGORY_COUNT; x++) {
+			// Selected category
+			if (x == currentCategoryIndex) {
+				int selectedX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN) - 4;
+				int selectedY = INVENTORY_Y_OFFSET + INVENTORY_BORDER - 4;
+				int selectedSize = CELL_SIZE + 8;
+				Raylib.drawRectangle(selectedX, selectedY, selectedSize, selectedSize, Inventory.TOOLBAR_SELECTED_COLOR);
+			}
+			// Cell
+			int cellX = INVENTORY_X_OFFSET + INVENTORY_BORDER + x * (CELL_SIZE + INVENTORY_MARGIN);
+			int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER;
 
-				Raylib.drawRectangle(cellX, cellY, CELL_SIZE, CELL_SIZE, Inventory.INVENTORY_CELL_COLOR);
-				
-				int offset = (CELL_SIZE - Block.BLOCK_WIDTH) / 2;
-				
-				// Categories
-				switch (x) {
-					case 0: // All
-						RaylibUtils.draw(Assets.grass_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-						break;
-					case 1: // Tools
-						RaylibUtils.draw(Assets.stone_pickaxe_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-						break;
-					case 2: // Blocks
-						RaylibUtils.draw(Assets.oak_plank_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-						break;
-					case 3: // Miscellaneous
-						RaylibUtils.draw(Assets.stick_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-						break;
-					
-					default:
-						break;
-				}
+			Raylib.drawRectangle(cellX, cellY, CELL_SIZE, CELL_SIZE, Inventory.INVENTORY_CELL_COLOR);
+
+			int offset = (CELL_SIZE - Block.BLOCK_WIDTH) / 2;
+
+			// Categories
+			switch (x) {
+				case 0: // All
+					RaylibUtils.draw(Assets.grass_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+					break;
+				case 1: // Tools
+					RaylibUtils.draw(Assets.stone_pickaxe_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+					break;
+				case 2: // Blocks
+					RaylibUtils.draw(Assets.oak_plank_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+					break;
+				case 3: // Miscellaneous
+					RaylibUtils.draw(Assets.stick_item, cellX + offset, cellY + offset, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+					break;
+
+				default:
+					break;
 			}
 		}
 	}
@@ -94,7 +93,7 @@ public class CraftingInventory {
 				int craftX = cellX + craftOffset;
 				int craftY = cellY + craftOffset;
 				
-				Item craftItem = availableCrafts.get(i).getCraftedItem();
+				Item craftItem = availableCrafts.get(i).craftedItem();
 				Inventory.renderItem(craftX, craftY, craftItem, false);
 			}
 		}
@@ -115,7 +114,7 @@ public class CraftingInventory {
 			return false;
 		}
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < CATEGORY_COUNT; i++) {
 			int cellX = INVENTORY_X_OFFSET + INVENTORY_BORDER + i * (CELL_SIZE + INVENTORY_MARGIN);
 			int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER;
 			if (mX >= cellX && mX <= cellX + CELL_SIZE && mY >= cellY && mY <= cellY + CELL_SIZE) {
@@ -157,26 +156,26 @@ public class CraftingInventory {
 			return false;
 		}
 		
-		ArrayList<Item> itemsCost = craft.getItemsCost();
+		ArrayList<Item> itemsCost = craft.itemsCost();
 		for (Item itemCost : itemsCost) {
 			int itemCostCountRemaining = itemCost.getCount();
 			
-			int itemCountInventoy1 = inventory1.countItemId(itemCost.getId());
-			int itemCountInventoy2 = 0;
+			int itemCountInventory1 = inventory1.countItemId(itemCost.getId());
+			int itemCountInventory2 = 0;
 			if (inventory2 != null) {
-				itemCountInventoy2 = inventory2.countItemId(itemCost.getId());
+				itemCountInventory2 = inventory2.countItemId(itemCost.getId());
 			}
 			
-			if (itemCountInventoy1 >= itemCost.getCount()) {
+			if (itemCountInventory1 >= itemCost.getCount()) {
 				// Enough items in inventory 1 -> consume items
 				if (!inventory1.removeItem(itemCost)) {
 					System.err.println("Craft went wrong while consuming items in 1 inventory in CraftingInventory.consumeCraftItems");
 					return false; // Something went wrong
 				}
-			} else if (itemCountInventoy1 + itemCountInventoy2 >= itemCost.getCount()) {
+			} else if (itemCountInventory1 + itemCountInventory2 >= itemCost.getCount()) {
 				// Enough items in both inventories -> consume items from both inventories
-				int itemsConsumedInventory1 = Math.min(itemCountInventoy1, itemCostCountRemaining);
-				int itemsConsumedInventory2 = Math.min(itemCountInventoy2, itemCostCountRemaining - itemCountInventoy1);
+				int itemsConsumedInventory1 = Math.min(itemCountInventory1, itemCostCountRemaining);
+				int itemsConsumedInventory2 = Math.min(itemCountInventory2, itemCostCountRemaining - itemCountInventory1);
 				
 				if (!inventory1.removeItem(new Item(itemsConsumedInventory1, itemCost.getType())) || !inventory2.removeItem(new Item(itemsConsumedInventory2, itemCost.getType()))) {
 					System.err.println("Craft went wrong while consuming items in 2 inventories in CraftingInventory.consumeCraftItems");

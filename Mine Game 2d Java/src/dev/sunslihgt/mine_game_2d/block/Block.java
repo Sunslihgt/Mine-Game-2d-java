@@ -10,8 +10,8 @@ public class Block {
 
 	public final static int BLOCK_WIDTH = 32;
 
-	protected int x, y;
-	protected BlockType type;
+	protected final int x, y;
+	protected final BlockType type;
 
 	private float breakingAmountLeft = 0;
 	protected int breakingStage = 0; // Defines the block breaking texture (index + 1) to use

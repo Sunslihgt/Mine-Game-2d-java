@@ -4,10 +4,10 @@ public enum GameMode {
 
 	SURVIVAL(true, true, 9), SPECTATOR(true, false, 15), CREATIVE(true, true, 15);
 
-	boolean visible, gravity;
-	int maxSpeed;
+	final boolean visible, gravity;
+	final int maxSpeed;
 
-	private GameMode(boolean visible, boolean gravity, int maxSpeed) {
+	GameMode(boolean visible, boolean gravity, int maxSpeed) {
 		this.visible = visible;
 		this.gravity = gravity;
 		this.maxSpeed = maxSpeed;

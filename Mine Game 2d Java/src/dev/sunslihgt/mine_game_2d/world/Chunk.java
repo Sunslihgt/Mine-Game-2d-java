@@ -12,13 +12,13 @@ public class Chunk {
 	public final static int CHUNK_WIDTH = 16, CHUNK_HEIGHT = 128;
 	public final static double NOISE_MIN = 0.35;
 	
-	private int chunkX;
+	private final int chunkX;
 	
 	private int[] heightMap;
 	private Block[][] blocks;
 	private Block[][] backgroundBlocks;
 
-	private Handler handler;
+	private final Handler handler;
 
 	public Chunk(Handler handler, int chunkX, double seed, double coalSeed, double ironSeed, double rubySeed) {
 		this.handler = handler;
@@ -167,7 +167,7 @@ public class Chunk {
 		for (int x = 0; x < CHUNK_WIDTH; x++) {
 			for (int y = 0; y < CHUNK_HEIGHT; y++) {
 				if (blocks[x][y] != null) {
-					if (y == 0 && blocks[x][y].getSkyLight() < 15) { // Spread sky light
+					if (y == 0 && blocks[x][y].getSkyLight() < 15) { // Spread skylight
 						int bX = Utils.convertToBlockX(x, chunkX);
 						handler.getWorld().spreadSkyLight(bX, y, 15);
 					}

@@ -13,13 +13,13 @@ public class World {
 	private ArrayList<Chunk> chunks;
 	private ArrayList<Integer> chunkXList;
 
-	private WorldBackground background;
+	private final WorldBackground background;
 
 	// Seeds
 	private double terrainSeed;
 	private double coalSeed, ironSeed, rubySeed;
 
-	private Handler handler;
+	private final Handler handler;
 
 	public World(Handler handler) {
 		this.handler = handler;
@@ -111,8 +111,8 @@ public class World {
 	public void tick() {
 		background.tick();
 
-		int minChunkX = (int) ((handler.getPlayer().getX() - handler.getWidth() / 2) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH)) - 1;
-		int maxChunkX = (int) ((handler.getPlayer().getX() + handler.getWidth() / 2) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH));
+		int minChunkX = (int) ((handler.getPlayer().getX() - handler.getWidth() / 2f) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH)) - 1;
+		int maxChunkX = (int) ((handler.getPlayer().getX() + handler.getWidth() / 2f) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH));
 
 		// Tick chunks
 		for (Chunk chunk : chunks) {
@@ -128,8 +128,8 @@ public class World {
 		int xOffset = handler.getGameCamera().getXOffset();
 		int yOffset = handler.getGameCamera().getYOffset();
 
-		int minChunkX = (int) ((handler.getPlayer().getX() - handler.getWidth() / 2) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH)) - 1;
-		int maxChunkX = (int) ((handler.getPlayer().getX() + handler.getWidth() / 2) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH));
+		int minChunkX = (int) ((handler.getPlayer().getX() - handler.getWidth() / 2f) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH)) - 1;
+		int maxChunkX = (int) ((handler.getPlayer().getX() + handler.getWidth() / 2f) / (Block.BLOCK_WIDTH * Chunk.CHUNK_WIDTH));
 
 		// If a chunk has not been generated, generate it
 		for (int x = minChunkX; x <= maxChunkX; x++) {
@@ -174,16 +174,14 @@ public class World {
 			Block block = getBlock(bX, bY);
 			if (block != null && block.getSkyLight() < light) {
 				if (block.getType().isTransparent()) {
-					if (block.getSkyLight() < light) {
-						getBlock(bX, bY).setSkyLight(light);
+					getBlock(bX, bY).setSkyLight(light);
 
-						// Spread light
-						if (bY + 1 < Chunk.CHUNK_HEIGHT) { // Down
-							spreadSkyLight(bX, bY + 1, light);
-						}
-						spreadSkyLight(bX - 1, bY, light - 1); // Left
-						spreadSkyLight(bX + 1, bY, light - 1); // Right
+					// Spread light
+					if (bY + 1 < Chunk.CHUNK_HEIGHT) { // Down
+						spreadSkyLight(bX, bY + 1, light);
 					}
+					spreadSkyLight(bX - 1, bY, light - 1); // Left
+					spreadSkyLight(bX + 1, bY, light - 1); // Right
 				} else {
 					light--;
 					if (block.getSkyLight() < light) {
@@ -241,7 +239,7 @@ public class World {
 			}
 		}
 
-		float pX = Utils.convertBlockToPixel(bX) + Block.BLOCK_WIDTH / 2;
+		float pX = Utils.convertBlockToPixel(bX) + Block.BLOCK_WIDTH / 2f;
 		float pY = Utils.convertBlockToPixel(bY) - 0.01f;
 		handler.getPlayer().setX(pX);
 		handler.getPlayer().setY(pY);
