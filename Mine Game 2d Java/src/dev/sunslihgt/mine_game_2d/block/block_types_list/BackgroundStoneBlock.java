@@ -12,8 +12,12 @@ public class BackgroundStoneBlock extends BlockType {
 
 	public BackgroundStoneBlock(int id) {
 		super(id, "background stone", Assets.background_stone_block, false, 0, false, true, 200, ToolType.PICKAXE, 1);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.stoneItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

@@ -54,11 +54,16 @@ public class Block {
 //		}
 	}
 	
-	// Overriden by some tile entities (eg : chests)
+	// Overridden by some tile entities (eg : chests)
 	public boolean rightClickBlock() {
 		return false; // Let the player use an item's right click action
 	}
 
+	/**
+	 * Damage a block
+	 * @param item Item used to damage the block
+	 * @return true if the block is broken
+	 */
 	public boolean damageBlock(Item item) {
 		if (!breakable) { // Unbreakable block
 			return false;
@@ -89,10 +94,8 @@ public class Block {
 		return false;
 	}
 	
-	// Overriden by some tile entities
-	public void breakBlock() {
-		
-	}
+	// Overridden by some tile entities
+	public void breakBlock() {}
 
 	public boolean canItemHarvestBlock(Item item) {
 		// Check if tool requirements are met

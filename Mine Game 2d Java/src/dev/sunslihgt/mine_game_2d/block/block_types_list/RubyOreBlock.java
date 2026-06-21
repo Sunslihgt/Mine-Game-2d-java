@@ -12,8 +12,12 @@ public class RubyOreBlock extends BlockType {
 
 	public RubyOreBlock(int id) {
 		super(id, "ruby ore", Assets.ruby_ore_block, false, 0, true, false, 140, ToolType.PICKAXE, 3);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.rubyOreItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

@@ -4,7 +4,7 @@ import com.raylib.Texture;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.item.item_types_list.*;
 
-public class ItemType {
+public abstract class ItemType {
 
 	// Item types list
 	public static ItemType[] itemTypes = new ItemType[256];

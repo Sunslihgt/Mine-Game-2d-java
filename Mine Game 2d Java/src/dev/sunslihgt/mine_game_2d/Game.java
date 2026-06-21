@@ -2,6 +2,7 @@ package dev.sunslihgt.mine_game_2d;
 
 import com.raylib.Color;
 import com.raylib.Raylib;
+import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.display.Display;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.GameCamera;
@@ -54,6 +55,7 @@ public class Game {
 		display = new Display("Mine Game 2d Java - Sunslihgt", width, height);
 
 		Assets.init();
+		BlockType.initAllDrops();
 		CookingRecipes.init();
 		CraftingRecipes.init();
 		handler = new Handler(this);

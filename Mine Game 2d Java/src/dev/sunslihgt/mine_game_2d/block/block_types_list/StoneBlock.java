@@ -12,8 +12,12 @@ public class StoneBlock extends BlockType {
 
 	public StoneBlock(int id) {
 		super(id, "stone", Assets.stone_block, false, 0, true, false, 200, ToolType.PICKAXE, 1);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.stoneItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

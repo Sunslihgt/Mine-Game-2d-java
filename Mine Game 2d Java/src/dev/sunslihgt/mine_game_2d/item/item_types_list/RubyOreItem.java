@@ -5,26 +5,13 @@ import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
+import dev.sunslihgt.mine_game_2d.item.PlaceableBlockItemType;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
 
-public class RubyOreItem extends ItemType {
+public class RubyOreItem extends PlaceableBlockItemType {
 
 	public RubyOreItem(int id) {
-		super(id, "ruby ore", Assets.ruby_ore_item, 64, ToolType.NONE, 0, 1, 0f);
+		super(id, "ruby ore", Assets.ruby_ore_item, 64, ToolType.NONE, 0, 1, 0f, BlockType.rubyOreBlock);
 	}
 
-	// Right click -> Place block
-	public boolean rightClickAction(Handler handler) {
-		int playerCursorX = handler.getPlayer().getPlayerCursor().getbX();
-		int playerCursorY = handler.getPlayer().getPlayerCursor().getbY();
-
-		// Place block
-		if (handler.getWorld().isEmptyBlock(playerCursorX, playerCursorY) && !handler.getPlayer().checkCollisionBlockPos(playerCursorX, playerCursorY)) {
-			Block dirtBlock = new Block(playerCursorX, playerCursorY, BlockType.rubyOreBlock);
-			handler.getWorld().placeBlock(playerCursorX, playerCursorY, dirtBlock);
-			return true; // Consume item
-		}
-
-		return false; // Do not consume item
-	}
 }

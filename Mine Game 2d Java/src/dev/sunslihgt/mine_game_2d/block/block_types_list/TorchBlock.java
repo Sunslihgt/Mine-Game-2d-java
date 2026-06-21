@@ -12,8 +12,12 @@ public class TorchBlock extends BlockType {
 
 	public TorchBlock(int id) {
 		super(id, "torch", Assets.torch_block, true, 13, false, false, 0, ToolType.NONE, 0);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.torchItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

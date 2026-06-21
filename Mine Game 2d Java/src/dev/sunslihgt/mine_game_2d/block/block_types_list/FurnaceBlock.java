@@ -12,8 +12,13 @@ public class FurnaceBlock extends BlockType {
 
 	public FurnaceBlock(int id) {
 		super(id, "furnace", Assets.furnace_block_off, true, 0, false, false, 180, ToolType.PICKAXE, 0);
+		isTileEntity = true;
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.furnaceItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

@@ -12,8 +12,12 @@ public class IronOreBlock extends BlockType {
 
 	public IronOreBlock(int id) {
 		super(id, "iron ore", Assets.iron_ore_block, false, 0, true, false, 120, ToolType.PICKAXE, 2);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.ironOreItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

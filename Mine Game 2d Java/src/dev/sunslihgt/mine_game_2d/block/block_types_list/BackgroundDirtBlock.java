@@ -12,8 +12,12 @@ public class BackgroundDirtBlock extends BlockType {
 
 	public BackgroundDirtBlock(int id) {
 		super(id, "background dirt", Assets.background_dirt_block, false, 0, false, true, 60, ToolType.SHOVEL, 0);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.dirtItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

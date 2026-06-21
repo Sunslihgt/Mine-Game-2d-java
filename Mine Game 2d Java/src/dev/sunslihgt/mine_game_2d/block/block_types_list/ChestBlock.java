@@ -12,8 +12,13 @@ public class ChestBlock extends BlockType {
 
 	public ChestBlock(int id) { // It does not contain everything about chests because it also has a tile entity
 		super(id, "chest block", Assets.chest_block, true, 0, false, false, 100, ToolType.AXE, 0);
+		isTileEntity = true;
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.chestItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

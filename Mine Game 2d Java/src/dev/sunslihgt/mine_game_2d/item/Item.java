@@ -1,11 +1,12 @@
 package dev.sunslihgt.mine_game_2d.item;
 
 import dev.sunslihgt.mine_game_2d.Handler;
+import dev.sunslihgt.mine_game_2d.player.GameMode;
 
 public class Item {
 
 	private int count;
-	private ItemType type;
+	private final ItemType type;
 
 	public Item(int count, ItemType type) {
 		this.count = count;

@@ -12,8 +12,12 @@ public class OakLeavesBlock extends BlockType {
 
 	public OakLeavesBlock(int id) { // It does not contain everything about chests because it also has a tile entity
 		super(id, "oak leaves block", Assets.oak_leaves_block, false, 0, true, false, 40, ToolType.AXE, 0);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.oakLeavesItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

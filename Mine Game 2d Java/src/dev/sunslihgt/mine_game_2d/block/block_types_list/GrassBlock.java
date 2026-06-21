@@ -12,8 +12,12 @@ public class GrassBlock extends BlockType {
 
 	public GrassBlock(int id) {
 		super(id, "grass", Assets.grass_block, false, 0, true, false, 60, ToolType.SHOVEL, 0);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.grassItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

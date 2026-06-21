@@ -12,8 +12,12 @@ public class CoalOreBlock extends BlockType {
 
 	public CoalOreBlock(int id) {
 		super(id, "coal ore", Assets.coal_ore_block, false, 0, true, false, 100, ToolType.PICKAXE, 1);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.coalOreItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }

@@ -22,28 +22,30 @@ import dev.sunslihgt.mine_game_2d.block.block_types_list.StoneBlock;
 import dev.sunslihgt.mine_game_2d.block.block_types_list.TorchBlock;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
 
-public class BlockType {
+@SuppressWarnings("StaticInitializerReferencesSubClass")
+public abstract class BlockType {
+	private final static int BLOCK_TYPE_COUNT = 256;
 	
 	// Block types list
-	public static BlockType[] blockTypes = new BlockType[256];
-	public static BlockType airBlock = new AirBlock(0);
-	public static BlockType dirtBlock = new DirtBlock(1);
-	public static BlockType grassBlock = new GrassBlock(2);
-	public static BlockType stoneBlock = new StoneBlock(3);
-	public static BlockType coalOreBlock = new CoalOreBlock(4);
-	public static BlockType ironOreBlock = new IronOreBlock(5);
-	public static BlockType rubyOreBlock = new RubyOreBlock(6);
-	public static BlockType torchBlock = new TorchBlock(7);
-	public static BlockType chestBlock = new ChestBlock(8);
-	public static BlockType furnaceBlock = new FurnaceBlock(9);
-	public static BlockType oakWoodBlock = new OakWoodBlock(10);
-	public static BlockType oakPlankBlock = new OakPlankBlock(11);
-	public static BlockType oakLeavesBlock = new OakLeavesBlock(12);
+	public static BlockType[] blockTypes = new BlockType[BLOCK_TYPE_COUNT];
+	public static final BlockType airBlock = new AirBlock(0);
+	public static final BlockType dirtBlock = new DirtBlock(1);
+	public static final BlockType grassBlock = new GrassBlock(2);
+	public static final BlockType stoneBlock = new StoneBlock(3);
+	public static final BlockType coalOreBlock = new CoalOreBlock(4);
+	public static final BlockType ironOreBlock = new IronOreBlock(5);
+	public static final BlockType rubyOreBlock = new RubyOreBlock(6);
+	public static final BlockType torchBlock = new TorchBlock(7);
+	public static final BlockType chestBlock = new ChestBlock(8);
+	public static final BlockType furnaceBlock = new FurnaceBlock(9);
+	public static final BlockType oakWoodBlock = new OakWoodBlock(10);
+	public static final BlockType oakPlankBlock = new OakPlankBlock(11);
+	public static final BlockType oakLeavesBlock = new OakLeavesBlock(12);
 
-	public static BlockType backgroundAirBlock = new BackgroundAirBlock(20);
-	public static BlockType backgroundGrassBlock = new BackgroundGrassBlock(21);
-	public static BlockType backgroundDirtBlock = new BackgroundDirtBlock(22);
-	public static BlockType backgroundStoneBlock = new BackgroundStoneBlock(23);
+	public static final BlockType backgroundAirBlock = new BackgroundAirBlock(20);
+	public static final BlockType backgroundGrassBlock = new BackgroundGrassBlock(21);
+	public static final BlockType backgroundDirtBlock = new BackgroundDirtBlock(22);
+	public static final BlockType backgroundStoneBlock = new BackgroundStoneBlock(23);
 	
 	
 	
@@ -53,12 +55,13 @@ public class BlockType {
 	protected String name;
 	protected Texture texture;
 	protected boolean transparent;
-	protected int lightEmited;
+	protected int lightEmitted;
 	protected boolean collide;
 	protected boolean background;
 	protected int hardness;
 	protected ToolType correctTool;
 	protected int minToolLvl;
+	protected boolean isTileEntity;
 	
 	protected ArrayList<BlockDrop> blockDrops;
 	
@@ -67,7 +70,7 @@ public class BlockType {
 		this.name = name;
 		this.texture = texture;
 		this.transparent = transparent;
-		this.lightEmited = lightEmited;
+		this.lightEmitted = lightEmited;
 		this.collide = collide;
 		this.background = background;
 		this.hardness = hardness;
@@ -76,6 +79,21 @@ public class BlockType {
 		
 		blockTypes[id] = this;
 	}
+
+	/**
+	 * Assign the item drops for all the declared block types.
+	 * Call once, after the item types have been statically initialized.
+	 */
+	public static void initAllDrops() {
+		for (int i = 0; i < BLOCK_TYPE_COUNT; i++) {
+			if (blockTypes[i] != null) {
+				blockTypes[i].initDrops();
+			}
+		}
+	}
+
+	// Overridden to declare drops for a BlockType
+	protected void initDrops() {}
 	
 	public int getId() {
 		return id;
@@ -109,8 +127,8 @@ public class BlockType {
 		return transparent;
 	}
 
-	public int getLightEmited() {
-		return lightEmited;
+	public int getLightEmitted() {
+		return lightEmitted;
 	}
 	
 }

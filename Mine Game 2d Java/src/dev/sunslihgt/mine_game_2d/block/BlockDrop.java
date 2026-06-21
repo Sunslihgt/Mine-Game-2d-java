@@ -14,7 +14,6 @@ public class BlockDrop {
 	/*
 	 * A block drop is an item type that has a random drop rate in a range (a minimum and a maximum)
 	 */
-	
 	public BlockDrop(ItemType itemType, int minDrop, int maxDrop) {
 		this.itemType = itemType;
 		this.minDrop = minDrop;

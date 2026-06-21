@@ -12,8 +12,12 @@ public class DirtBlock extends BlockType {
 
 	public DirtBlock(int id) {
 		super(id, "dirt", Assets.dirt_block, false, 0, true, false, 80, ToolType.SHOVEL, 0);
+	}
+
+	@Override
+	protected void initDrops() {
 		ArrayList<BlockDrop> drops = new ArrayList<>();
 		drops.add(new BlockDrop(ItemType.dirtItem, 1, 1));
-		super.blockDrops = drops;
+		blockDrops = drops;
 	}
 }
