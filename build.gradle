@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'dev.sunslihgt.mine_game_2d.Launcher'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src'] }
+        resources { srcDirs = ['resources'] }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.github.electronstudio:jaylib-ffm:5.5.0-2'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+}
+
+run {
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+}
