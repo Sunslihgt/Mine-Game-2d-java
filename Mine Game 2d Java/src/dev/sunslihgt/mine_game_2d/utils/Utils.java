@@ -1,13 +1,82 @@
 package dev.sunslihgt.mine_game_2d.utils;
 
 import com.raylib.Vector2;
+import com.raylib.Vector3;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.world.Chunk;
 
-public class Utils {
-	public final static Vector2 VECTOR_ZERO = new Vector2(0, 0);
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-	// Block, Chunk and Chunk index conversion
+public class Utils {
+	/* Vectors */
+	public final static Vector2 VECTOR2_ZERO = new Vector2(0, 0);
+	public final static Vector3 VECTOR3_ZERO = new Vector3(0, 0, 0);
+	public static final List<int[]> neighbors4Ints = List.of(
+			new int[] { 0,  1},
+			new int[] { 0, -1},
+			new int[] { 1,  0},
+			new int[] {-1,  0}
+	);
+	public static final List<int[]> neighbors8Ints = List.of(
+			new int[] {-1,  1},
+			new int[] { 0,  1},
+			new int[] { 1,  1},
+			new int[] {-1,  0},
+			new int[] { 1,  0},
+			new int[] {-1, -1},
+			new int[] { 0, -1},
+			new int[] { 1, -1}
+	);
+	public static final List<Vector2> neighbors4Vectors = List.of(
+			new Vector2( 0,  1),
+			new Vector2( 0, -1),
+			new Vector2( 1,  0),
+			new Vector2(-1,  0)
+	);
+	public static final List<Vector2> neighbors8Vectors = List.of(
+			new Vector2(-1,  1),
+			new Vector2( 0,  1),
+			new Vector2( 1,  1),
+			new Vector2(-1,  0),
+			new Vector2( 1,  0),
+			new Vector2(-1, -1),
+			new Vector2( 0, -1),
+			new Vector2( 1, -1)
+	);
+
+	/**
+	 * Euclidean length for the given vector 2D
+	 */
+	public static double magnitude(Vector2 vector2) {
+		return Math.sqrt(vector2.getX() * vector2.getX() + vector2.getY() * vector2.getY());
+	}
+
+	/**
+	 * Euclidean length for the given vector 3D
+	 */
+	public static double magnitude(Vector3 vector3) {
+		return Math.sqrt(vector3.getX() * vector3.getX() + vector3.getY() * vector3.getY() + vector3.getZ() * vector3.getZ());
+	}
+
+	/**
+	 * Manhattan distance between two 2D points
+	 */
+	public static int distance2d(int x1, int y1, int x2, int y2) {
+		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+	}
+
+	/* Maximum */
+	public static int maxInt(Integer... vals) {
+		return Collections.max(Arrays.asList(vals));
+	}
+
+	public static float maxFloat(Float... vals) {
+		return Collections.max(Arrays.asList(vals));
+	}
+
+	/* Block, Chunk and Chunk index conversion */
 	public static int convertToChunkIndex(int bX) {
 		return Math.floorDiv(bX, Chunk.CHUNK_WIDTH);
 	}
@@ -24,7 +93,7 @@ public class Utils {
 		return cX;
 	}
 	
-	// Block and Pixel conversion
+	/* Block and Pixel conversion */
 	public static int convertPixelToBlock(int pCoord) {
 		return Math.floorDiv(pCoord, Block.BLOCK_WIDTH);
 	}

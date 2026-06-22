@@ -22,15 +22,19 @@ public abstract class PlaceableBlockItemType extends ItemType {
 		int playerCursorY = handler.getPlayer().getPlayerCursor().getbY();
 
 		// Place block
-		if (handler.getWorld().isEmptyBlock(playerCursorX, playerCursorY) && !handler.getPlayer().checkCollisionBlockPos(playerCursorX, playerCursorY)) {
-			try {
-				Block block = BlockFactory.createBlock(playerCursorX, playerCursorY, blockTypeToPlace, handler);
-				handler.getWorld().placeBlock(playerCursorX, playerCursorY, block);
-			} catch (InvalidClassException e) {
-				e.printStackTrace();
-				System.exit(1);
+		if (handler.getWorld().isEmptyBlock(playerCursorX, playerCursorY)) {
+			// No block already here
+			if (!blockTypeToPlace.hasCollider() || !handler.getPlayer().checkCollisionBlockPos(playerCursorX, playerCursorY)) {
+				// No collision with the player
+				try {
+					Block block = BlockFactory.createBlock(playerCursorX, playerCursorY, blockTypeToPlace, handler);
+					handler.getWorld().placeBlock(playerCursorX, playerCursorY, block);
+				} catch (InvalidClassException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				return true; // Consume item
 			}
-			return true; // Consume item
 		}
 
 		return false; // Do not consume item

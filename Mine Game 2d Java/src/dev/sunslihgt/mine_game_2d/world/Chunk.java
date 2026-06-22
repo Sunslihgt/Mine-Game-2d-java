@@ -152,6 +152,7 @@ public class Chunk {
 		}
 	}
 
+	/*
 	public void resetLighting() {
 		for (int x = 0; x < CHUNK_WIDTH; x++) {
 			for (int y = 0; y < CHUNK_HEIGHT; y++) {
@@ -190,7 +191,7 @@ public class Chunk {
 		for (int x = 0; x < CHUNK_WIDTH; x++) {
 			for (int y = 0; y < CHUNK_HEIGHT; y++) {
 				if (blocks[x][y] != null) { // Spread block light
-					if (blocks[x][y].getType().getLightEmitted() > 0) {
+					if (Utils.magnitude(blocks[x][y].getType().getLightEmitted()) > 0) {
 						int bX = Utils.convertToBlockX(x, chunkX);
 						handler.getWorld().spreadBlockLight(bX, y, blocks[x][y].getType().getLightEmitted());
 					}
@@ -198,7 +199,8 @@ public class Chunk {
 			}
 		}
 	}
-	
+	*/
+
 	public int getPlayerSpawnHeight(int bX) {
 		int chunkX = Utils.convertToChunkIndex(bX);
 		int cX = Utils.convertToChunkBlockX(bX);

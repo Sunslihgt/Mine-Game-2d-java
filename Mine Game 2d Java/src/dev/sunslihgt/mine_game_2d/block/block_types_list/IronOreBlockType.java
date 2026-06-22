@@ -7,11 +7,12 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
+import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class IronOreBlockType extends BlockType {
 
 	public IronOreBlockType(int id) {
-		super(id, "iron ore", Assets.iron_ore_block, false, 0, true, false, 120, ToolType.PICKAXE, 2, false);
+		super(id, "iron ore", Assets.iron_ore_block, false, Utils.VECTOR3_ZERO, true, false, 120, ToolType.PICKAXE, 2, false);
 	}
 
 	@Override

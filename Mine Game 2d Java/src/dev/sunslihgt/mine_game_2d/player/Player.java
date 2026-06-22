@@ -161,6 +161,28 @@ public class Player {
 			System.out.println("Game mode: " + gameMode);
 		}
 
+		// Dig a hole in spectator mode
+		if (keyManager.keyJustPressed(KeyboardKey.KEY_F) && gameMode == GameMode.SPECTATOR) {
+			int playerBx = Utils.convertPixelToBlock(x);
+			int playerBy = Utils.convertPixelToBlock(y);
+			for (int xOffset = -10; xOffset <= 10; xOffset++) {
+				for (int yOffset = -10; yOffset <= 10; yOffset++) {
+					handler.getWorld().deleteBlock(playerBx + xOffset, playerBy + yOffset);
+				}
+			}
+			System.out.println("Dug a hole");
+		}
+
+		// Change blend mode
+//		if (keyManager.keyJustPressed(KeyboardKey.KEY_C)) {
+//			handler.getLighting().incrementBlendModeIndex(1);
+//		}
+//		if (keyManager.keyJustPressed(KeyboardKey.KEY_V)) {
+//			handler.getLighting().incrementBlendModeIndex(-1);
+//		}
+//		if (keyManager.keyJustPressed(KeyboardKey.KEY_B)) {
+//			handler.getLighting().toggleDebugLightBuffer();
+//		}
 	}
 
 	// Check collisions with nearby blocks until there is no more collisions

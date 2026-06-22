@@ -7,11 +7,12 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
+import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class BackgroundGrassBlockType extends BlockType {
 
 	public BackgroundGrassBlockType(int id) {
-		super(id, "background grass", Assets.background_grass_block, false, 0, false, true, 60, ToolType.SHOVEL, 0, false);
+		super(id, "background grass", Assets.background_grass_block, false, Utils.VECTOR3_ZERO, false, true, 60, ToolType.SHOVEL, 0, false);
 	}
 
 	@Override

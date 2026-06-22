@@ -88,7 +88,7 @@ public class Block {
 			breakingStage = 0;
 		} else {
 			breakingStage = (int) Math.ceil((1 - breakingAmountLeft / type.getHardness()) * Assets.block_breaking.length);
-			System.out.println("Breaking stage: " + breakingStage + ", left: " + breakingAmountLeft + ", hardness: " + type.getHardness());
+//			System.out.println("Breaking stage: " + breakingStage + ", left: " + breakingAmountLeft + ", hardness: " + type.getHardness());
 		}
 
 		return false;

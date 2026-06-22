@@ -6,9 +6,10 @@ import dev.sunslihgt.mine_game_2d.item.item_types_list.*;
 
 @SuppressWarnings("StaticInitializerReferencesSubClass")
 public abstract class ItemType {
+	private final static int ITEM_TYPE_COUNT = 256;
 
 	// Item types list
-	public static final ItemType[] itemTypes = new ItemType[256];
+	public static final ItemType[] itemTypes = new ItemType[ITEM_TYPE_COUNT];
 	public static final ItemType dirtItem = new DirtItemType(0);
 	public static final ItemType grassItem = new GrassItemType(1);
 	public static final ItemType stoneItem = new StoneItemType(2);
@@ -34,7 +35,10 @@ public abstract class ItemType {
 	public static final ItemType woodenShovelItem = new WoodenShovelItemType(22);
 	public static final ItemType stoneShovelItem = new StoneShovelItemType(23);
 	public static final ItemType ironShovelItem = new IronShovelItemType(24);
-	
+	public static final ItemType redTorchItem = new RedTorchItemType(25);
+	public static final ItemType greenTorchItem = new BlueTorchItemType(26);
+	public static final ItemType blueTorchItem = new GreenTorchItemType(27);
+
 
 	// ItemType class
 	protected final int id;

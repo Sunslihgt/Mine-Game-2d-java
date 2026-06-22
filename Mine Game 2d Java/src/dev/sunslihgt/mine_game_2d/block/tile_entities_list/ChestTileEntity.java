@@ -2,12 +2,12 @@ package dev.sunslihgt.mine_game_2d.block.tile_entities_list;
 
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
-import dev.sunslihgt.mine_game_2d.block.TileEntityType;
+import dev.sunslihgt.mine_game_2d.block.TileEntity;
 import dev.sunslihgt.mine_game_2d.player.Inventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory.OpenedInventoryEnum;
 
-public class ChestTileEntityType extends TileEntityType {
+public class ChestTileEntity extends TileEntity {
 	
 	private final static int inventoryXOffset = 600, inventoryYOffset = 100;
 	
@@ -15,7 +15,7 @@ public class ChestTileEntityType extends TileEntityType {
 	
 	private final Handler handler;
 	
-	public ChestTileEntityType(int x, int y, Handler handler) {
+	public ChestTileEntity(int x, int y, Handler handler) {
 		super(x, y, BlockType.chestBlock);
 		
 		this.handler = handler;

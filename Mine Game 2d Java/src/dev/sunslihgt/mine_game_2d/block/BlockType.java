@@ -3,6 +3,7 @@ package dev.sunslihgt.mine_game_2d.block;
 import java.util.ArrayList;
 
 import com.raylib.Texture;
+import com.raylib.Vector3;
 import dev.sunslihgt.mine_game_2d.block.block_types_list.*;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
 
@@ -25,6 +26,9 @@ public abstract class BlockType {
 	public static final BlockType oakWoodBlock = new OakWoodBlockType(10);
 	public static final BlockType oakPlankBlock = new OakPlankBlockType(11);
 	public static final BlockType oakLeavesBlock = new OakLeavesBlockType(12);
+	public static final BlockType redTorchBlock = new RedTorchBlockType(13);
+	public static final BlockType greenTorchBlock = new GreenTorchBlockType(14);
+	public static final BlockType blueTorchBlock = new BlueTorchBlockType(15);
 
 	public static final BlockType backgroundAirBlock = new BackgroundAirBlockType(20);
 	public static final BlockType backgroundGrassBlock = new BackgroundGrassBlockType(21);
@@ -39,7 +43,7 @@ public abstract class BlockType {
 	protected final String name;
 	protected final Texture texture;
 	protected final boolean transparent;
-	protected final int lightEmitted;
+	protected final Vector3 lightEmitted;
 	protected final boolean collide;
 	protected final boolean background;
 	protected final int hardness;
@@ -49,12 +53,12 @@ public abstract class BlockType {
 	
 	protected ArrayList<BlockDrop> blockDrops;
 	
-	public BlockType(int id, String name, Texture texture, boolean transparent, int lightEmited, boolean collide, boolean background, int hardness, ToolType correctTool, int minToolLvl, boolean isTileEntity) {
+	public BlockType(int id, String name, Texture texture, boolean transparent, Vector3 lightEmitted, boolean collide, boolean background, int hardness, ToolType correctTool, int minToolLvl, boolean isTileEntity) {
 		this.id = id;
 		this.name = name;
 		this.texture = texture;
 		this.transparent = transparent;
-		this.lightEmitted = lightEmited;
+		this.lightEmitted = lightEmitted;
 		this.collide = collide;
 		this.background = background;
 		this.hardness = hardness;
@@ -112,7 +116,7 @@ public abstract class BlockType {
 		return transparent;
 	}
 
-	public int getLightEmitted() {
+	public Vector3 getLightEmitted() {
 		return lightEmitted;
 	}
 	

@@ -6,6 +6,7 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.display.Display;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.GameCamera;
+import dev.sunslihgt.mine_game_2d.gfx.Lighting;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
 import dev.sunslihgt.mine_game_2d.input.MouseManager;
 import dev.sunslihgt.mine_game_2d.player.Player;
@@ -32,7 +33,7 @@ public class Game {
 	private World world;
 	
 	// Lighting
-//	private Lighting lighting;
+	private Lighting lighting;
 
 	// Player
 	private Player player;
@@ -63,7 +64,7 @@ public class Game {
 		gameCamera = new GameCamera(handler);
 		world = new World(handler);
 		world.spawnPlayer();
-//		lighting = new Lighting(handler);
+		lighting = new Lighting(handler);
 	}
 
 	private void run() {
@@ -92,7 +93,7 @@ public class Game {
 			// lastTickTime = System.nanoTime();
 
 			if (timer >= 1_000_000_000) {
-				System.out.println("Ticks and Frames: " + ticks);
+//				System.out.println("Ticks and Frames: " + ticks);
 				ticks = 0;
 				timer = 0;
 			}
@@ -120,7 +121,7 @@ public class Game {
 
 		// Render
 		world.render();
-//		lighting.render(g);
+		lighting.render();
 		player.render();
 
 		// Debug
@@ -143,6 +144,7 @@ public class Game {
 		if (!running)
 			return;
 		Raylib.closeWindow();
+		lighting.destroy();
 		running = false;
 	}
 
@@ -175,5 +177,13 @@ public class Game {
 
 	public MouseManager getMouseManager() {
 		return mouseManager;
+	}
+
+	public Display getDisplay() {
+		return display;
+	}
+
+	public Lighting getLighting() {
+		return lighting;
 	}
 }

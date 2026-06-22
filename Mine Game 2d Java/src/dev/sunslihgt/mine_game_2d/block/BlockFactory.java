@@ -1,8 +1,8 @@
 package dev.sunslihgt.mine_game_2d.block;
 
 import dev.sunslihgt.mine_game_2d.Handler;
-import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntityType;
-import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntityType;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntity;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntity;
 
 import java.io.InvalidClassException;
 
@@ -18,9 +18,9 @@ public class BlockFactory {
     public static Block createBlock(int x, int y, BlockType blockType, Handler handler) throws InvalidClassException {
         if (blockType.isTileEntity) {
             if (blockType == BlockType.chestBlock) {
-                return new ChestTileEntityType(x, y, handler);
+                return new ChestTileEntity(x, y, handler);
             } else if (blockType == BlockType.furnaceBlock) {
-                return new FurnaceTileEntityType(x, y, handler);
+                return new FurnaceTileEntity(x, y, handler);
             } else {
                 throw new InvalidClassException("Tile entity class was not found for block type: " + blockType.name);
             }

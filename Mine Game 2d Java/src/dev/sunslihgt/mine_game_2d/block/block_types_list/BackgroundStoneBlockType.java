@@ -7,11 +7,12 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
+import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class BackgroundStoneBlockType extends BlockType {
 
 	public BackgroundStoneBlockType(int id) {
-		super(id, "background stone", Assets.background_stone_block, false, 0, false, true, 200, ToolType.PICKAXE, 1, false);
+		super(id, "background stone", Assets.background_stone_block, false, Utils.VECTOR3_ZERO, false, true, 200, ToolType.PICKAXE, 1, false);
 	}
 
 	@Override

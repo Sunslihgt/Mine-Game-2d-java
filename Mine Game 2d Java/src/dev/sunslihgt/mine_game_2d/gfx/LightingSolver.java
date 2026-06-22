@@ -3,33 +3,33 @@ package dev.sunslihgt.mine_game_2d.gfx;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import com.raylib.Vector3;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
-import dev.sunslihgt.mine_game_2d.block.BlockType;
+import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class LightingSolver extends Thread {
 
 	// Script inspired by Gonkee's really good video (youtube.com/watch?v=NEHMJwt7oUI)
 
-	private static final int lightRadius = 10;
-	private static final float blockLightDropOff = 0.7f, airLightDropOff = 0.9f;
+	private static final int lightRadius = 20; // Distance used to calculate each light's emission. Does not define the light strength or intensity
+	private static float blockLightDropOff = 0.70f, airLightDropOff = 0.93f;
 	private static final float lightLevelCutOff = 0.01f; // The minimum value for light (if smaller -> 0)
 
-	private static final float[] ambientColors = { 1f, 1f, 1f };
+	private static final float[] ambientColors = { 1f, 1f, 1f }; // Dark color
 
 	private int newMinRenderBX, newMinRenderBY;
-	private int minRenderBX, minRenderBY;
 	private int renderBWidth, renderBHeight;
+	private float[][][] lights;
 
-	@SuppressWarnings("unused")
-	private boolean[][] emitsLight;
-	private float[][][] lights, calculatingLights;
+	// Volatile
+	public volatile LightSnapshot lightSnapshot;
 
-	boolean calculsComplete = true;
+	public final Semaphore semaphore = new Semaphore(1);
 
-	Semaphore semaphore = new Semaphore(6);
+	private final Handler handler;
 
-	private Handler handler;
+	private boolean running = true;
 
 	public LightingSolver(Handler handler) {
 		this.handler = handler;
@@ -38,47 +38,46 @@ public class LightingSolver extends Thread {
 		renderBHeight = handler.getGameCamera().getRenderBHeight();
 
 		lights = new float[renderBWidth][renderBHeight][3];
+		lightSnapshot = new LightSnapshot(lights, handler.getGameCamera().getSnapshot());
 
-		start();
+		start(); // Schedule the run method in another Thread
 	}
 
 	@Override
 	public void run() {
-		while (true) {
-			try {
-				semaphore.acquire();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		while (running) {
+//			try {
+//				semaphore.acquire(); // Wait for Lighting to release the semaphore
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 
-			calculsComplete = false;
+			// Get a snapshot of the game camera
+			GameCameraSnapshot gameCameraSnapshot = handler.getGameCamera().getSnapshot();
 
 			// Get the starting and width of the space to render
-			newMinRenderBX = handler.getGameCamera().getMinRenderBX();
-			newMinRenderBY = handler.getGameCamera().getMinRenderBY();
+			newMinRenderBX = gameCameraSnapshot.minRenderBX();
+			newMinRenderBY = gameCameraSnapshot.minRenderBY();
 
-			renderBWidth = handler.getGameCamera().getRenderBWidth();
-			renderBHeight = handler.getGameCamera().getRenderBHeight();
+			renderBWidth = gameCameraSnapshot.renderBWidth();
+			renderBHeight = gameCameraSnapshot.renderBHeight();
 
 			if (renderBWidth <= 0 || renderBHeight <= 0) {
 				return; // If there is no block to render return
 			}
+//			System.out.printf("Lighting solver (%d, %d, %d, %d)\n", newMinRenderBX, newMinRenderBY, newMinRenderBX + renderBWidth, newMinRenderBY + renderBHeight);
 
-			// Calculate lighting
+			// Calculate lighting for the frame
 			calculateLighting();
 
-			minRenderBX = newMinRenderBX;
-			minRenderBY = newMinRenderBY;
-
-			calculsComplete = true;
+			// Update the light data snapshot
+			lightSnapshot = new LightSnapshot(lights, gameCameraSnapshot);
 		}
 	}
 
 	private void calculateLighting() {
 		boolean[][] emitsLight = new boolean[renderBWidth][renderBHeight];
-		calculatingLights = new float[renderBWidth][renderBHeight][3];
-
-//		int[][][] lightColors = new int[renderWidth][renderHeight][3];
+		lights = new float[renderBWidth][renderBHeight][3];
 
 		// Get a grid of emitting blocks (boolean)
 		// Get a grid of light level (only for emitting blocks)
@@ -87,21 +86,22 @@ public class LightingSolver extends Thread {
 				Block block = handler.getWorld().getBlock(x + newMinRenderBX, y + newMinRenderBY);
 				if (block == null) {
 					emitsLight[x][y] = false;
-					calculatingLights[x][y] = new float[] { 0, 0, 0 };
-				} else if (block.getId() == BlockType.airBlock.getId()) {
-					if (!handler.getWorld().isUnderground(x + newMinRenderBX, y + newMinRenderBY)) {
-						emitsLight[x][y] = true;
-						calculatingLights[x][y] = new float[] { ambientColors[0], ambientColors[1], ambientColors[2] };
-					} else {
-						emitsLight[x][y] = false;
-						calculatingLights[x][y] = new float[] { 0, 0, 0 };
-					}
-				} else if (block.getType().getLightEmited() > 0) {
-					emitsLight[x][y] = true;
-					calculatingLights[x][y] = new float[] { 1f, 1f, 0 };
+					lights[x][y] = new float[] { 0, 0, 0 };
 				} else {
-					emitsLight[x][y] = false;
-					calculatingLights[x][y] = new float[] { 0, 0, 0 };
+					Vector3 blockEmittedLight = block.getType().getLightEmitted();
+					if (Utils.magnitude(blockEmittedLight) > 0) {
+						// Light block
+						emitsLight[x][y] = true;
+						lights[x][y] = new float[]{blockEmittedLight.getX(), blockEmittedLight.getY(), blockEmittedLight.getZ()};
+					} else if (block.getType().isTransparent() && !handler.getWorld().isUnderground(x + newMinRenderBX, y + newMinRenderBY)) {
+						// Outside air light
+						emitsLight[x][y] = true;
+						lights[x][y] = new float[] { ambientColors[0], ambientColors[1], ambientColors[2] };
+					} else {
+						// No light emitted
+						emitsLight[x][y] = false;
+						lights[x][y] = new float[] { 0, 0, 0 };
+					}
 				}
 			}
 		}
@@ -110,98 +110,106 @@ public class LightingSolver extends Thread {
 		for (int x = 0; x < renderBWidth; x++) {
 			for (int y = 0; y < renderBHeight; y++) {
 				if (emitsLight[x][y]) {
-					emitLight(x, y, calculatingLights[x][y]);
+					emitLight(x, y, lights[x][y]);
 				}
 			}
 		}
-
-		lights = calculatingLights;
 	}
 
 	private void emitLight(int startX, int startY, float[] light) {
 		ArrayList<int[]> lightFillQueue = new ArrayList<int[]>();
-		float[][][] singleLightEmission = new float[lightRadius * 2 + 1][lightRadius * 2 + 1][1];
-		for (int x = 0; x < lightRadius * 2 + 1; x++) {
-			for (int y = 0; y < lightRadius * 2 + 1; y++) {
-				singleLightEmission[x][y] = new float[] { 0, 0, 0 };
-			}
-		}
+		float[][][] singleLightEmission = new float[lightRadius * 2 + 1][lightRadius * 2 + 1][3];
 
 		lightFillQueue.add(new int[] { startX, startY });
 		singleLightEmission[lightRadius][lightRadius] = new float[] { light[0], light[1], light[2] };
 
 		while (!lightFillQueue.isEmpty()) {
-			int[] currentBlock = lightFillQueue.remove(0);
+			int[] currentBlock = lightFillQueue.removeFirst();
 			int x = currentBlock[0];
 			int y = currentBlock[1];
 
-			int currentLayer = Math.abs(x - startX) + Math.abs(y - startY);
+			int distanceToStart = Utils.distance2d(x, y, startX, startY);
 
-			boolean willPassOn = false;
-			float[] currentLight = calculatingLights[x][y];
+			boolean willPassOn = x == startX && y == startY; // True when at the start position
+			float[] currentLight = lights[x][y];
 			float[] targetLight = singleLightEmission[lightRadius + x - startX][lightRadius + y - startY];
 
 			if ((targetLight[0] > lightLevelCutOff || targetLight[1] > lightLevelCutOff || targetLight[2] > lightLevelCutOff) && 
 				(targetLight[0] > currentLight[0] || targetLight[1] > currentLight[1] || targetLight[2] > currentLight[2])) {
-				calculatingLights[x][y] = new float[] {
-					targetLight[0],
-					targetLight[1],
-					targetLight[2]
+				// Merge the light levels by using the maximum for each color channel
+				lights[x][y] = new float[] {
+					Math.max(currentLight[0], targetLight[0]),
+					Math.max(currentLight[1], targetLight[1]),
+					Math.max(currentLight[2], targetLight[2])
 				};
-				willPassOn = true;
+				willPassOn = true; // Run neighbors
 			}
 
-			// Neighbor loop
-			if (willPassOn || (x == startX && y == startY)) {
-				for (int nx = x - 1; nx <= x + 1; nx++) {
-					for (int ny = y - 1; ny <= y + 1; ny++) {
-						if (nx >= 0 && nx < renderBWidth && ny >= 0 && ny < renderBHeight && (nx != x || ny != y)) {
-							int neighborLayer = Math.abs(nx - startX) + Math.abs(ny - startY);
-							if (neighborLayer <= lightRadius && neighborLayer == currentLayer + 1) {
-								
-								float dropOff = blockLightDropOff;
-								if (handler.getWorld().getBlock(x, y).getId() != BlockType.airBlock.getId() || handler.getWorld().getBlock(x, y).getType().isTransparent()) {
-									dropOff = airLightDropOff;
-								}
+			// Spread to neighbors loop
+			if (willPassOn) {
+				for (int[] neighborOffset : Utils.neighbors4Ints) {
+					int nx = x + neighborOffset[0];
+					int ny = y + neighborOffset[1];
 
-								int emitX = lightRadius + nx - startX;
-								int emitY = lightRadius + ny - startY;
+					if (nx >= 0 && nx < renderBWidth && ny >= 0 && ny < renderBHeight) {
+						// In the render rect
+						int neighborDistanceToStart = Utils.distance2d(nx, ny, startX, startY);
+						if (neighborDistanceToStart > lightRadius) continue;
 
-								if (singleLightEmission[emitX][emitY][0] + singleLightEmission[emitX][emitY][1] + singleLightEmission[emitX][emitY][2] == 0) {
-									lightFillQueue.add(new int[] { nx, ny });
-								}
-
-								singleLightEmission[emitX][emitY][0] = Math.max(targetLight[0] * dropOff, singleLightEmission[emitX][emitY][0]);
-								singleLightEmission[emitX][emitY][1] = Math.max(targetLight[1] * dropOff, singleLightEmission[emitX][emitY][1]);
-								singleLightEmission[emitX][emitY][2] = Math.max(targetLight[2] * dropOff, singleLightEmission[emitX][emitY][2]);
-							}
+						float dropOff = blockLightDropOff;
+						Block block = handler.getWorld().getBlock(x + newMinRenderBX, y + newMinRenderBY);
+						if (block == null || block.getType().isTransparent()) {
+							dropOff = airLightDropOff;
 						}
 
+						int emitX = lightRadius + nx - startX;
+						int emitY = lightRadius + ny - startY;
+
+
+						// Decrease light by multiplying by the dropOff coefficient
+						float newR = Math.max(targetLight[0] - (1 - dropOff), singleLightEmission[emitX][emitY][0]);
+						float newG = Math.max(targetLight[1] - (1 - dropOff), singleLightEmission[emitX][emitY][1]);
+						float newB = Math.max(targetLight[2] - (1 - dropOff), singleLightEmission[emitX][emitY][2]);
+
+						// Decrease light by subtracting by the dropOff
+//						float newR = Math.max(targetLight[0] * dropOff, singleLightEmission[emitX][emitY][0]);
+//						float newG = Math.max(targetLight[1] * dropOff, singleLightEmission[emitX][emitY][1]);
+//						float newB = Math.max(targetLight[2] * dropOff, singleLightEmission[emitX][emitY][2]);
+
+						// Add neighbor to the emit queue (if not emitted yet or any color channel has a higher value)
+						if (
+								neighborDistanceToStart == distanceToStart + 1 ||
+								newR > singleLightEmission[emitX][emitY][0] ||
+								newG > singleLightEmission[emitX][emitY][1] ||
+								newB > singleLightEmission[emitX][emitY][2]
+						) {
+							lightFillQueue.add(new int[] { nx, ny });
+						}
+
+						singleLightEmission[emitX][emitY][0] = newR;
+						singleLightEmission[emitX][emitY][1] = newG;
+						singleLightEmission[emitX][emitY][2] = newB;
 					}
 				}
 			}
 		}
-
-
 	}
 
-	public float[][][] getLights() {
-		return lights.clone();
+	public LightSnapshot getLightSnapshot() {
+		return lightSnapshot;
 	}
 
-	public int getMinRenderBX() {
-		return minRenderBX;
-	}
+//	public static void incrementBlockLightDropOff(float amount) {
+//		blockLightDropOff = Math.clamp(blockLightDropOff + amount, 0, 1f);
+//		System.out.printf("Light drop off: air=%f, block=%f\n", airLightDropOff, blockLightDropOff);
+//	}
+//
+//	public static void incrementAirLightDropOff(float amount) {
+//		airLightDropOff = Math.clamp(airLightDropOff + amount, 0, 1f);
+//		System.out.printf("Light drop off: air=%f, block=%f\n", airLightDropOff, blockLightDropOff);
+//	}
 
-	public int getMinRenderBY() {
-		return minRenderBY;
-	}
-
-	public int getRenderBWidth() {
-		return renderBWidth;
-	}
-
-	public int getRenderBHeight() {
-		return renderBHeight;
+	public void destroy() {
+		running = false;
 	}
 }

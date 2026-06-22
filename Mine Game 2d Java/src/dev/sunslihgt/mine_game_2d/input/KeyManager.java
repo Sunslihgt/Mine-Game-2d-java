@@ -41,4 +41,10 @@ public class KeyManager {
 			return false;
 		return justPressed[keyCode];
 	}
+
+    public boolean keyDown(int keyCode) {
+        if (keyCode < 0 || keyCode >= KEYS_LENGTH)
+            return false;
+        return keys[keyCode];
+    }
 }

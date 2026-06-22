@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
-import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntityType;
-import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntityType;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntity;
+import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntity;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipe;
@@ -29,8 +29,8 @@ public class PlayerInventory {
 	}
 	
 	private OpenedInventoryEnum selectedInventory = OpenedInventoryEnum.NONE;
-	private ChestTileEntityType chestSelected;
-	private FurnaceTileEntityType furnaceSelected;
+	private ChestTileEntity chestSelected;
+	private FurnaceTileEntity furnaceSelected;
 	
 	private boolean lastLeftClick = false, lastRightClick = false;
 
@@ -49,10 +49,10 @@ public class PlayerInventory {
 		inventory.setItemWithIndex(0, new Item(1, ItemType.woodenPickaxeItem));
 		inventory.setItemWithIndex(1, new Item(1, ItemType.stonePickaxeItem));
 		inventory.setItemWithIndex(2, new Item(1, ItemType.ironPickaxeItem));
-		inventory.setItemWithIndex(3, new Item(12, ItemType.stoneItem));
-		inventory.setItemWithIndex(4, new Item(48, ItemType.dirtItem));
-		inventory.setItemWithIndex(5, new Item(64, ItemType.coalItem));
-		inventory.setItemWithIndex(6, new Item(16, ItemType.torchItem));
+		inventory.setItemWithIndex(3, new Item(12, ItemType.torchItem));
+		inventory.setItemWithIndex(4, new Item(48, ItemType.redTorchItem));
+		inventory.setItemWithIndex(5, new Item(64, ItemType.blueTorchItem));
+		inventory.setItemWithIndex(6, new Item(16, ItemType.greenTorchItem));
 		inventory.setItemWithIndex(7, new Item(3, ItemType.chestItem));
 		inventory.setItemWithIndex(8, new Item(7, ItemType.furnaceItem));
 		
@@ -72,6 +72,10 @@ public class PlayerInventory {
 		inventory.setItemWithIndex(23, new Item(64, ItemType.oakWoodItem));
 		inventory.setItemWithIndex(24, new Item(64, ItemType.oakPlankItem));
 		inventory.setItemWithIndex(25, new Item(64, ItemType.oakLeavesItem));
+
+		inventory.setItemWithIndex(26, new Item(12, ItemType.stoneItem));
+		inventory.setItemWithIndex(27, new Item(48, ItemType.dirtItem));
+		inventory.setItemWithIndex(28, new Item(64, ItemType.coalItem));
 		
 		craftingInventory = new CraftingInventory();
 	}
@@ -91,7 +95,17 @@ public class PlayerInventory {
 		int mY = handler.getMouseManager().getMouseY();
 
 		// Mouse Wheel
-		inventory.moveToolbarIndex(handler.getMouseManager().getScroll());
+		int scroll = handler.getMouseManager().getScroll();
+		if (scroll != 0) {
+			inventory.moveToolbarIndex(scroll);
+//			if (handler.getKeyboardManager().keyDown(Raylib.KeyboardKey.KEY_LEFT_SHIFT)) {
+//				LightingSolver.incrementBlockLightDropOff(scroll * 0.002f);
+//			} else if (handler.getKeyboardManager().keyDown(Raylib.KeyboardKey.KEY_LEFT_CONTROL)){
+//				LightingSolver.incrementAirLightDropOff(scroll * 0.002f);
+//			} else {
+//				inventory.moveToolbarIndex(scroll);
+//			}
+		}
 
 		// Inventory
 		if (inventoryOpen) {
@@ -473,19 +487,19 @@ public class PlayerInventory {
 		this.selectedInventory = selectedInventory;
 	}
 	
-	public ChestTileEntityType getChestSelected() {
+	public ChestTileEntity getChestSelected() {
 		return chestSelected;
 	}
 	
-	public void setChestSelected(ChestTileEntityType chestSelected) {
+	public void setChestSelected(ChestTileEntity chestSelected) {
 		this.chestSelected = chestSelected;
 	}
 	
-	public FurnaceTileEntityType getFurnaceSelected() {
+	public FurnaceTileEntity getFurnaceSelected() {
 		return furnaceSelected;
 	}
 	
-	public void setFurnaceSelected(FurnaceTileEntityType furnaceSelected) {
+	public void setFurnaceSelected(FurnaceTileEntity furnaceSelected) {
 		this.furnaceSelected = furnaceSelected;
 	}
 }

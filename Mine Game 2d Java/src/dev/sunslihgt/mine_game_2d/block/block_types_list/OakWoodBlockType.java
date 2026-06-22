@@ -7,11 +7,12 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.item.ToolType;
+import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class OakWoodBlockType extends BlockType {
 
 	public OakWoodBlockType(int id) { // It does not contain everything about chests because it also has a tile entity
-		super(id, "oak wood block", Assets.oak_wood_block, false, 0, true, false, 160, ToolType.AXE, 0, false);
+		super(id, "oak wood block", Assets.oak_wood_block, false, Utils.VECTOR3_ZERO, true, false, 160, ToolType.AXE, 0, false);
 	}
 
 	@Override

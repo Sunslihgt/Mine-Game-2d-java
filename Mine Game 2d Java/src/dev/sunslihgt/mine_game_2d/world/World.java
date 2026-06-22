@@ -91,7 +91,7 @@ public class World {
 
 				// Eventually, spawn the tree
 				if (!obstacle) {
-					System.out.println("Spawn the tree");
+//					System.out.println("Spawn the tree");
 					BlockType[][] treeBlocksTypes = tree.getBlocks();
 
 					for (int x = 0; x < treeWidth; x++) {
@@ -151,7 +151,7 @@ public class World {
 		}
 	}
 
-	@SuppressWarnings("unused")
+	/*
 	private void resetLighting(int minChunkX, int maxChunkX) {
 		for (Chunk chunk : chunks) {
 			if (chunk.getChunkX() >= minChunkX && chunk.getChunkX() <= maxChunkX) {
@@ -160,7 +160,6 @@ public class World {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void skyLighting(int minChunkX, int maxChunkX) {
 		for (Chunk chunk : chunks) {
 			if (chunk.getChunkX() >= minChunkX && chunk.getChunkX() <= maxChunkX) {
@@ -199,7 +198,6 @@ public class World {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void blockLighting(int minChunkX, int maxChunkX) {
 		for (Chunk chunk : chunks) {
 			if (chunk.getChunkX() >= minChunkX && chunk.getChunkX() <= maxChunkX) {
@@ -227,6 +225,7 @@ public class World {
 
 		}
 	}
+	*/
 
 	public void spawnPlayer() {
 		int bX = 0;

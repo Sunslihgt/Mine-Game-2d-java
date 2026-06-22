@@ -57,6 +57,6 @@ public class RaylibUtils {
     }
 
     public static void draw(Texture texture, Rectangle textureRect, Rectangle pos) {
-        Raylib.drawTexturePro(texture, textureRect, pos, Utils.VECTOR_ZERO, 0, Raylib.WHITE);
+        Raylib.drawTexturePro(texture, textureRect, pos, Utils.VECTOR2_ZERO, 0, Raylib.WHITE);
     }
 }

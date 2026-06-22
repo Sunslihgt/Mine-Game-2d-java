@@ -1,5 +1,6 @@
 package dev.sunslihgt.mine_game_2d;
 
+import dev.sunslihgt.mine_game_2d.display.Display;
 import dev.sunslihgt.mine_game_2d.gfx.GameCamera;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
 import dev.sunslihgt.mine_game_2d.input.MouseManager;
@@ -34,5 +35,9 @@ public record Handler(Game game) {
 
 	public GameCamera getGameCamera() {
 		return game.getGameCamera();
+	}
+
+	public Display getDisplay() {
+		return game.getDisplay();
 	}
 }

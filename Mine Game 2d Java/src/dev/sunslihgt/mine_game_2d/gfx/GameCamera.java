@@ -11,6 +11,7 @@ public class GameCamera {
 	private int xOffset, yOffset;
 	private int minRenderBX, minRenderBY;
 	private final int renderBWidth, renderBHeight;
+	private volatile GameCameraSnapshot snapshot;
 	private final Handler handler;
 
 	public GameCamera(Handler handler) {
@@ -18,6 +19,8 @@ public class GameCamera {
 		
 		renderBWidth = Utils.convertPixelToBlock(handler.getWidth()) + addedRenderDistance * 2;
 		renderBHeight = Utils.convertPixelToBlock(handler.getWidth()) + addedRenderDistance * 2;
+
+		snapshot = new GameCameraSnapshot(0, 0, 0, 0, renderBWidth, renderBHeight);
 	}
 
 	public void calculateOffset() {
@@ -34,11 +37,10 @@ public class GameCamera {
 			minRenderBY = 0;
 		}
 
-//		System.out.println("xOffset: " + xOffset + ", yOffset: " + yOffset);
+		// Store the camera data for the current frame
+		snapshot = new GameCameraSnapshot(xOffset, yOffset, minRenderBX, minRenderBY, renderBWidth, renderBHeight);
 
-//		int mBX = handler.getPlayer().getPlayerCursor().getbX();
-//		int mBY = handler.getPlayer().getPlayerCursor().getbY();
-//		System.out.println("rMinBX: " + renderMinBX + ", rMinBY: " + renderMinBY + ", rMaxBX: " + renderMaxBX + ", rMaxBY: " + renderMaxBY + ", mBX: " + mBX + ", mBY: " + mBY);
+//		System.out.println("xOffset: " + xOffset + ", yOffset: " + yOffset);
 	}
 
 	public int getXOffset() {
@@ -63,5 +65,9 @@ public class GameCamera {
 
 	public int getRenderBHeight() {
 		return renderBHeight;
+	}
+
+	public GameCameraSnapshot getSnapshot() {
+		return snapshot;
 	}
 }

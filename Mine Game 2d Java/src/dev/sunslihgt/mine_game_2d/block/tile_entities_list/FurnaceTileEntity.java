@@ -4,7 +4,7 @@ import com.raylib.Raylib;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
-import dev.sunslihgt.mine_game_2d.block.TileEntityType;
+import dev.sunslihgt.mine_game_2d.block.TileEntity;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
@@ -14,7 +14,7 @@ import dev.sunslihgt.mine_game_2d.player.PlayerInventory.OpenedInventoryEnum;
 import dev.sunslihgt.mine_game_2d.recipes.CookingRecipes;
 import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
-public class FurnaceTileEntityType extends TileEntityType {
+public class FurnaceTileEntity extends TileEntity {
 	
 	private final int INVENTORY_X_OFFSET = 600, INVENTORY_Y_OFFSET = 100;
 	private final int INVENTORY_WIDTH = 9 * (Inventory.INVENTORY_SCREEN_CELL_SIZE + Inventory.INVENTORY_SCREEN_MARGIN) - Inventory.INVENTORY_SCREEN_MARGIN + Inventory.INVENTORY_SCREEN_BORDER * 2;
@@ -30,7 +30,7 @@ public class FurnaceTileEntityType extends TileEntityType {
 	
 	private final Handler handler;
 	
-	public FurnaceTileEntityType(int x, int y, Handler handler) {
+	public FurnaceTileEntity(int x, int y, Handler handler) {
 		super(x, y, BlockType.furnaceBlock);
 		
 		this.handler = handler;
@@ -255,5 +255,6 @@ public class FurnaceTileEntityType extends TileEntityType {
 		}
 		return false;
 	}
-	
+
+	// TODO: change emitted light when cooking
 }
