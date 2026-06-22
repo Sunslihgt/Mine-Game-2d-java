@@ -1,4 +1,4 @@
-package dev.sunslihgt.mine_game_2d.gfx;
+package dev.sunslihgt.mine_game_2d.gfx.lighting;
 
 import com.raylib.Color;
 import com.raylib.Raylib;

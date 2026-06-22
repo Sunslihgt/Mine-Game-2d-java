@@ -6,7 +6,7 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.display.Display;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.GameCamera;
-import dev.sunslihgt.mine_game_2d.gfx.Lighting;
+import dev.sunslihgt.mine_game_2d.gfx.lighting.Lighting;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
 import dev.sunslihgt.mine_game_2d.input.MouseManager;
 import dev.sunslihgt.mine_game_2d.player.Player;

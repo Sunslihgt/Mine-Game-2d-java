@@ -1,4 +1,6 @@
-package dev.sunslihgt.mine_game_2d.gfx;
+package dev.sunslihgt.mine_game_2d.gfx.lighting;
+
+import dev.sunslihgt.mine_game_2d.gfx.GameCameraSnapshot;
 
 /**
  * Stores light data for a single frame and the necessary parameters to render it on top of the scene in a different thread.

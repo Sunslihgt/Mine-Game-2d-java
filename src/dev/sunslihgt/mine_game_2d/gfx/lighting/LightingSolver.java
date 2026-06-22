@@ -1,4 +1,4 @@
-package dev.sunslihgt.mine_game_2d.gfx;
+package dev.sunslihgt.mine_game_2d.gfx.lighting;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 import com.raylib.Vector3;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
+import dev.sunslihgt.mine_game_2d.gfx.GameCameraSnapshot;
 import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class LightingSolver extends Thread {
