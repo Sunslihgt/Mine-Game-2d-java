@@ -13,8 +13,7 @@ public class ImageLoader {
             File tempFile;
             try (var inputStream = ImageLoader.class.getResourceAsStream(path)) {
                 if (inputStream == null) {
-                    System.err.println("Resource not found: " + path);
-                    System.exit(1);
+                    throw new IOException("Resource not found: " + path);
                 }
 
                 String suffix = path.substring(path.lastIndexOf('.'));

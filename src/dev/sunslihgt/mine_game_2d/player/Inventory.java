@@ -7,7 +7,8 @@ import com.raylib.Raylib;
 import com.raylib.Color;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
-import dev.sunslihgt.mine_game_2d.gfx.Text;
+import dev.sunslihgt.mine_game_2d.gfx.font.Text;
+import dev.sunslihgt.mine_game_2d.gfx.font.Text.FontAnchor;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
@@ -161,23 +162,15 @@ public class Inventory {
 		if (center) {
 			x -= Block.BLOCK_WIDTH / 2;
 			y -= Block.BLOCK_WIDTH / 2;
-			RaylibUtils.draw(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
-			
-			// Item count
-			if (item.getType().getMaxStack() != 1) {
-				int countX = x + Block.BLOCK_WIDTH + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
-				int countY = y + Block.BLOCK_WIDTH - 2;
-				Text.drawString(Integer.toString(item.getCount()), countX, countY, true, true, Raylib.WHITE, Assets.inventory_font);
-			}
-		} else {
-			RaylibUtils.draw(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+		}
 
-			// Item count
-			if (item.getType().getMaxStack() != 1) {
-				int countX = x + Block.BLOCK_WIDTH + (INVENTORY_SCREEN_CELL_SIZE - Block.BLOCK_WIDTH) / 2;
-				int countY = y + Block.BLOCK_WIDTH - 2;
-				Text.drawString(Integer.toString(item.getCount()), countX, countY, true, true, Raylib.WHITE, Assets.inventory_font);
-			}
+		RaylibUtils.draw(item.getType().getTexture(), x, y, Block.BLOCK_WIDTH, Block.BLOCK_WIDTH);
+
+		// Item count
+		if (item.getType().getMaxStack() != 1) {
+			int countX = x + Block.BLOCK_WIDTH + 3;
+			int countY = y + Block.BLOCK_WIDTH + 6;
+			Text.drawString(Integer.toString(item.getCount()), countX, countY, Assets.inventory_font, FontAnchor.BOTTOM_RIGHT, Raylib.WHITE);
 		}
 	}
 	

@@ -125,7 +125,7 @@ public class Game {
 		player.render();
 
 		// Debug
-		Raylib.drawFPS(width - 300, 100);
+		Raylib.drawFPS(width - 94, 100);
 
 		// End Rendering
 		Raylib.endDrawing();

@@ -1,8 +1,12 @@
 package dev.sunslihgt.mine_game_2d.gfx;
 
-import com.raylib.Font;
 import com.raylib.Rectangle;
 import com.raylib.Texture;
+import dev.sunslihgt.mine_game_2d.gfx.font.FontData;
+import dev.sunslihgt.mine_game_2d.gfx.font.FontLoader;
+import dev.sunslihgt.mine_game_2d.gfx.font.Text;
+
+import java.util.List;
 
 public class Assets {
 	
@@ -44,11 +48,14 @@ public class Assets {
 	public static Texture[] smallest_clouds, small_clouds, medium_clouds, big_clouds;
 	
 	// Font
-	public static Font inventory_font;
+	public static FontData default_font, inventory_font;
 
 	public static void init() {
 		try {
-			inventory_font = FontLoader.loadFont("/assets/fonts/MinecraftRegular-Bmg3.otf", 22);
+			// Fonts
+			List<FontData> regularFonts = FontLoader.loadFonts("/assets/fonts/MinecraftRegular-Bmg3.otf", List.of(Text.INVENTORY_SIZE, Text.DEFAULT_SIZE));
+			inventory_font = regularFonts.get(0);
+			default_font = regularFonts.get(1);
 
 			// Blocks
 			SpriteSheet blockTileSheet = new SpriteSheet(ImageLoader.loadImage("/assets/textures/block_spritesheet_x16_v1.png"));
