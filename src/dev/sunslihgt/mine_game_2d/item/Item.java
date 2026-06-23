@@ -56,6 +56,10 @@ public class Item {
 	public ItemType getType() {
 		return type;
 	}
+
+	public String getName() {
+		return type.name;
+	}
 	
 	public int getId() {
 		return type.getId();

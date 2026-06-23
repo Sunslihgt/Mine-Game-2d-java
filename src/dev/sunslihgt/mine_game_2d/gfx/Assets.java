@@ -43,19 +43,22 @@ public class Assets {
 	public static Texture heart, half_heart, empty_heart;
 	public static Texture arrow;
 	public static Texture mouse_cursor;
+	public static Texture tooltip_background;
+	public static final int TOOLTIP_BACKGROUND_SIZE = width, TOOLTIP_BACKGROUND_CORNER = 6;
 
 	// Background
 	public static Texture[] smallest_clouds, small_clouds, medium_clouds, big_clouds;
 	
 	// Font
-	public static FontData default_font, inventory_font;
+	public static FontData inventory_font, tooltip_font, default_font;
 
 	public static void init() {
 		try {
 			// Fonts
-			List<FontData> regularFonts = FontLoader.loadFonts("/assets/fonts/MinecraftRegular-Bmg3.otf", List.of(Text.INVENTORY_SIZE, Text.DEFAULT_SIZE));
+			List<FontData> regularFonts = FontLoader.loadFonts("/assets/fonts/MinecraftRegular-Bmg3.otf", List.of(Text.INVENTORY_SIZE, Text.TOOLTIP_SIZE, Text.DEFAULT_SIZE));
 			inventory_font = regularFonts.get(0);
-			default_font = regularFonts.get(1);
+			tooltip_font = regularFonts.get(1);
+			default_font = regularFonts.get(2);
 
 			// Blocks
 			SpriteSheet blockTileSheet = new SpriteSheet(ImageLoader.loadImage("/assets/textures/block_spritesheet_x16_v1.png"));
@@ -164,6 +167,8 @@ public class Assets {
 			arrow = uiTileSheet.crop(0, height * 3, width, height);
 
 			mouse_cursor = uiTileSheet.crop(width, height * 3, width, height);
+
+			tooltip_background = uiTileSheet.crop(width * 2, height * 3, width, height);
 
 			// Unload sprite sheets
 			blockTileSheet.unload();

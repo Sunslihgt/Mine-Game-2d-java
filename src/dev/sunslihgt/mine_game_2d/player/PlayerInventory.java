@@ -7,6 +7,7 @@ import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntity;
 import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntity;
+import dev.sunslihgt.mine_game_2d.gfx.Tooltip;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipe;
@@ -393,10 +394,71 @@ public class PlayerInventory {
 		}
 		
 		// Render cursor item
+		int mX = handler.getMouseManager().getMouseX();
+		int mY = handler.getMouseManager().getMouseY();
 		if (cursorSelectedItem != null) {
-			int mouseX = handler.getMouseManager().getMouseX();
-			int mouseY = handler.getMouseManager().getMouseY();
-			Inventory.renderItem(mouseX, mouseY, cursorSelectedItem, true);
+			Inventory.renderItem(mX, mY, cursorSelectedItem, true);
+		} else {
+			boolean showTooltip = false;
+			Item tooltipItem = null;
+
+			if (inventoryOpen) {
+				// Inventory
+				if (inventory.isMouseInInventory(mX, mY, true)) {
+					int inventorySlot = inventory.getMouseHoveringSlot(mX, mY, true);
+					if (inventorySlot >= 0 && inventorySlot < inventory.getInventoryCellsAmount()) { // Mouse hovering slot
+						Item inventoryItem = inventory.getItemWithIndex(inventorySlot);
+						if (inventoryItem != null) {
+							showTooltip = true;
+							tooltipItem = inventoryItem;
+						}
+					}
+				}
+
+				// Crafting inventory
+				if (!showTooltip && craftingInventory.isMouseInInventory(mX, mY)) {
+					ArrayList<Item> availableItems = inventory.getItemsListCopy();
+					if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
+						availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
+					}
+					CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY, availableItems);
+					if (craft != null) {
+						showTooltip = true;
+						tooltipItem = craft.craftedItem();
+					}
+				}
+
+				// Chest inventory
+				if (!showTooltip && selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null && chestSelected.getChestInventory().isMouseInInventory(mX, mY, true)) { // Mouse hover chest inventory
+					Inventory chestInventory = chestSelected.getChestInventory();
+					int chestSlot = chestInventory.getMouseHoveringSlot(mX, mY, true);
+					if (chestSlot >= 0 && chestSlot < chestInventory.getInventoryCellsAmount()) {
+						// Mouse on chest cell
+						Item chestItem = chestInventory.getItemWithIndex(chestSlot);
+						if (chestItem != null) {
+							showTooltip = true;
+							tooltipItem = chestItem;
+						}
+					}
+				}
+
+				// Furnace inventory
+				if (!showTooltip && selectedInventory == OpenedInventoryEnum.FURNACE && furnaceSelected != null && furnaceSelected.isMouseInInventory(mX, mY)) { // Mouse hover furnace inventory
+					int furnaceSlot = furnaceSelected.getMouseHoveringSlot(mX, mY, true);
+					if (furnaceSlot >= 0 && furnaceSlot < 3) {
+						// Mouse on furnace cell
+						Item furnaceItem = furnaceSelected.getItemWithIndex(furnaceSlot);
+						if (furnaceItem != null) {
+							showTooltip = true;
+							tooltipItem = furnaceItem;
+						}
+					}
+				}
+			}
+
+			if (showTooltip && tooltipItem != null) {
+				Tooltip.drawToolTip(mX, mY, tooltipItem);
+			}
 		}
 	}
 	

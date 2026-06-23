@@ -105,4 +105,30 @@ public class Utils {
 	public static int convertBlockToPixel(int bCoord) {
 		return bCoord * Block.BLOCK_WIDTH;
 	}
+
+	/**
+	 * Capitalize each word in a space separated string.
+	 * <a href="https://www.geeksforgeeks.org/java/java-program-to-capitalize-the-first-letter-of-each-word-in-a-string">Source: GeeksForGeeks</a>
+	 */
+	public static String capitalizeWords(String input) {
+		if (input == null || input.isEmpty()) {
+			return input;
+		}
+
+		// Split the input string into words using whitespace
+		String[] words = input.split("\\s");
+
+		// Create a StringBuilder
+		StringBuilder result = new StringBuilder();
+
+		for (String word : words) {
+			// Capitalize the first letter of each word and append the rest of the word
+			result.append(Character.toUpperCase(word.charAt(0)))
+				.append(word.substring(1).toLowerCase())
+				.append(" "); // Add a space between words
+		}
+
+		// Remove the trailing space and return the capitalized string
+		return result.toString().trim();
+	}
 }

@@ -6,7 +6,7 @@ import com.raylib.Raylib;
 import com.raylib.Vector2;
 
 public class Text {
-	public static final int INVENTORY_SIZE = 25, DEFAULT_SIZE = 20;
+	public static final int INVENTORY_SIZE = 25, TOOLTIP_SIZE = 22, DEFAULT_SIZE = 20;
 
 	public enum FontAnchor {
 		TOP_LEFT(0x11),
@@ -46,5 +46,13 @@ public class Text {
 
 //		Raylib.drawRectangle(xPos, yPos, (int) textSize.getX(), (int) textSize.getY(), Raylib.RED); // Debug textSize rectangle
 		Raylib.drawTextEx(font, text, new Vector2(xPos, yPos), fontSize, spacing, c);
+	}
+
+	public static Vector2 getStringDimensions(String text, FontData fontData) {
+		return getStringDimensions(text, fontData.fontSize(), fontData.spacing(), fontData.font());
+	}
+
+	public static Vector2 getStringDimensions(String text, int fontSize, int spacing, Font font) {
+		return Raylib.measureTextEx(font, text, fontSize, spacing);
 	}
 }
