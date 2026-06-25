@@ -46,6 +46,7 @@ public class Item {
 	}
 
 	public void setCount(int count) {
+		if (count <= 0) System.err.println("Item.setCount with an invalid count: " + count);
 		this.count = count;
 	}
 	
@@ -55,6 +56,10 @@ public class Item {
 
 	public ItemType getType() {
 		return type;
+	}
+
+	public String getName() {
+		return type.name;
 	}
 	
 	public int getId() {

@@ -2,11 +2,14 @@ package dev.sunslihgt.mine_game_2d.player;
 
 import java.util.ArrayList;
 
+import com.raylib.Raylib.KeyboardKey;
 import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
+import dev.sunslihgt.mine_game_2d.block.TileEntity;
 import dev.sunslihgt.mine_game_2d.block.tile_entities_list.ChestTileEntity;
 import dev.sunslihgt.mine_game_2d.block.tile_entities_list.FurnaceTileEntity;
+import dev.sunslihgt.mine_game_2d.gfx.Tooltip;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.recipes.CraftingRecipe;
@@ -31,8 +34,6 @@ public class PlayerInventory {
 	private OpenedInventoryEnum selectedInventory = OpenedInventoryEnum.NONE;
 	private ChestTileEntity chestSelected;
 	private FurnaceTileEntity furnaceSelected;
-	
-	private boolean lastLeftClick = false, lastRightClick = false;
 
 	private final Handler handler;
 	private final Player player;
@@ -81,322 +82,234 @@ public class PlayerInventory {
 	}
 	
 	public void tick() {
+		updateAvailableCrafts();
+
 		checkMouseInput();
-		
-//		System.out.println("Torch craft possible: " + CraftingRecipes.isCraftAffordable(CraftingRecipes.craftingRecipes.get(0), inventory.getItemsListCopy()));
+
+		updateAvailableCrafts(); // Update again, in case the inventories have changed, before rendering
 	}
-	
-	// Manage mouse inputs in inventory (and toolbar)
+
+	/**
+	 * Manage mouse inputs in player inventories (player inventory, toolbar, crafting interface and containers)
+	 */
 	public void checkMouseInput() {
-		boolean leftClicked = handler.getMouseManager().isLeftPressed();
-		boolean rightClicked = handler.getMouseManager().isRightPressed();
-
-		int mX = handler.getMouseManager().getMouseX();
-		int mY = handler.getMouseManager().getMouseY();
-
 		// Mouse Wheel
 		int scroll = handler.getMouseManager().getScroll();
 		if (scroll != 0) {
 			inventory.moveToolbarIndex(scroll);
-//			if (handler.getKeyboardManager().keyDown(Raylib.KeyboardKey.KEY_LEFT_SHIFT)) {
-//				LightingSolver.incrementBlockLightDropOff(scroll * 0.002f);
-//			} else if (handler.getKeyboardManager().keyDown(Raylib.KeyboardKey.KEY_LEFT_CONTROL)){
-//				LightingSolver.incrementAirLightDropOff(scroll * 0.002f);
-//			} else {
-//				inventory.moveToolbarIndex(scroll);
-//			}
 		}
 
 		// Inventory
-		if (inventoryOpen) {
-			// Inventory
-			if (inventory.isMouseInInventory(mX, mY, true)) {
-				int inventorySlot = inventory.getMouseHoveringSlot(mX, mY, true);
-				if (inventorySlot >= 0 && inventorySlot < inventory.getInventoryCellsAmount()) { // Mouse hovering slot
-					Item inventorySlotItem = inventory.getItemWithIndex(inventorySlot);
-					if (leftClicked && !lastLeftClick) { // Left click
-						if (cursorSelectedItem == null) { // No selected item -> select new
-							if (inventorySlotItem != null) {
-								cursorSelectedItem = inventorySlotItem;
-								inventory.setItemWithIndex(inventorySlot, null);
-							}
-						} else { // Mouse clicks a second slot
-							// Move item
-							if (inventorySlotItem == null) {
-								inventory.setItemWithIndex(inventorySlot, cursorSelectedItem);
-								cursorSelectedItem = null;
-							} else if (cursorSelectedItem.getId() == inventorySlotItem.getId()) { // Combine items
-								int inventoryItemCount = Math.min(inventorySlotItem.getCount() + cursorSelectedItem.getCount(), cursorSelectedItem.getType().getMaxStack());
-								int cursorItemCount = inventorySlotItem.getCount() + cursorSelectedItem.getCount() - inventoryItemCount;
-								inventorySlotItem.setCount(inventoryItemCount);
-								if (cursorItemCount <= 0) { // No more cursor item -> reset
-									cursorSelectedItem = null;
-								} else {
-									cursorSelectedItem.setCount(cursorItemCount);
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = inventorySlotItem;
-								inventory.setItemWithIndex(inventorySlot, cursorItemBuffer);
-							}
-						}
-					} else if (rightClicked && !lastRightClick) { // Right click
-						if (cursorSelectedItem == null) { // No selected item -> select half of item stack
-							if (inventorySlotItem != null) {
-								int inventoryItemCount = inventorySlotItem.getCount() / 2;
-								int cursorItemCount = inventorySlotItem.getCount() - inventoryItemCount;
-								cursorSelectedItem = new Item(cursorItemCount, inventorySlotItem.getType());
-								if (inventoryItemCount <= 0) {
-									inventory.setItemWithIndex(inventorySlot, null);
-								} else {
-									inventorySlotItem.setCount(inventoryItemCount);
-								}
-							}
-						} else { // Cursor selected item -> select a 2nd slot
-							if (inventorySlotItem == null) { // Deposit one item in empty slot
-								inventory.setItemWithIndex(inventorySlot, new Item(1, cursorSelectedItem.getType()));
-								if (cursorSelectedItem.getCount() - 1 <= 0) {
-									cursorSelectedItem = null;
-								} else {
-									cursorSelectedItem.addCount(-1);
-								}
-							} else if (inventorySlotItem.getId() == cursorSelectedItem.getId()) { // Deposit one item in slot
-								if (inventorySlotItem.getCount() + 1 <= inventorySlotItem.getType().getMaxStack()) { // slot not full
-									inventorySlotItem.addCount(1);
-									if (cursorSelectedItem.getCount() - 1 <= 0) {
-										cursorSelectedItem = null;
-									} else {
-										cursorSelectedItem.addCount(-1);
-									}
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = inventorySlotItem;
-								inventory.setItemWithIndex(inventorySlot, cursorItemBuffer);
-							}
-						}
-					}
-				}
-			}
-			// Crafting inventory
-			else if (craftingInventory.isMouseInInventory(mX, mY)) {
-				if ((leftClicked && !lastLeftClick) && !craftingInventory.clickCategory(mX, mY)) {
-					ArrayList<Item> availableItems = inventory.getItemsListCopy();
-					if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
-						availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
-					}
-					CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY, availableItems);
+		handleInventoriesMouseActions();
+	}
 
-					if (craft != null) {
-						Item craftedItem = craft.craftedItem().getCopy();
-						if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
-							if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
-								if (craftingInventory.consumeCraftItems(craft, inventory, chestSelected.getChestInventory())) {
-									if (cursorSelectedItem == null) {
-										cursorSelectedItem = craftedItem;
-									} else {
-										cursorSelectedItem.addCount(craftedItem.getCount());
-									}
-								}
+	private void handleInventoriesMouseActions() {
+		int mX = handler.getMouseManager().getMouseX();
+		int mY = handler.getMouseManager().getMouseY();
+
+		// Handle main inventory
+		boolean mouseHoverUI = handleContainerAction(inventory, getSelectedInventoryContainer(), mX, mY);
+
+		// Handle crafting inventory
+		if (!mouseHoverUI) {
+			mouseHoverUI = handleCraftingInventoryAction(mX, mY);
+		}
+
+		// Handle selected inventory
+		if (!mouseHoverUI) {
+			ISlotContainer selectedInventoryContainer = getSelectedInventoryContainer();
+			if (selectedInventoryContainer != null) {
+                handleContainerAction(selectedInventoryContainer, inventory, mX, mY);
+            }
+		}
+	}
+
+	/**
+	 * Handle the mouse actions for a given container.
+	 * @param container An {@link ISlotContainer} instance
+	 *
+	 * @param mX Mouse x position
+	 * @param mY Mouse y position
+	 * @return true if the mouse is hovering the container UI.
+	 */
+	private boolean handleContainerAction(ISlotContainer container, ISlotContainer alternativeContainer, int mX, int mY) {
+		if (container == null) {
+			System.err.println();
+			return false;
+		}
+
+		boolean transferKeyDown = handler.getKeyboardManager().keyDown(KeyboardKey.KEY_LEFT_SHIFT);
+		boolean mouseHoveringContainer = container.isMouseHoveringUI(mX, mY, inventoryOpen);
+
+		if (mouseHoveringContainer) {
+			int slot = container.getMouseSlotIndex(mX, mY, inventoryOpen);
+			if (slot >= 0 && slot < container.getInventoryCellsAmount()) { // Mouse hovering slot
+				Item item = container.getItemWithIndex(slot);
+				if (handler.getMouseManager().isLeftJustPressed()) { // Left click
+					if (transferKeyDown) {
+						if (alternativeContainer != null) {
+							item = alternativeContainer.addItem(item);
+							if (item == null || item.getCount() == 0) {
+								container.setItemWithIndex(slot, null);
+							}
+						} else if (container instanceof Inventory containerInventory) { // No other container open and instance of Inventory
+                            if (containerInventory.getHasToolbar()) { // Has a toolbar -> transfer item toolbar <> inventory
+								containerInventory.transferSlotToolbarInventory(slot);
+							}
+						}
+					} else if (cursorSelectedItem == null) { // No selected item -> select new
+						if (item != null) {
+							cursorSelectedItem = item;
+							container.setItemWithIndex(slot, null);
+						}
+					} else { // Cursor carrying an item + a new slot is clicked
+						// Move item
+						if (item == null) {
+							container.setItemWithIndex(slot, cursorSelectedItem);
+							cursorSelectedItem = null;
+						} else if (cursorSelectedItem.getId() == item.getId()) { // Combine items
+							int inventoryItemCount = Math.min(item.getCount() + cursorSelectedItem.getCount(), cursorSelectedItem.getType().getMaxStack());
+							int cursorItemCount = item.getCount() + cursorSelectedItem.getCount() - inventoryItemCount;
+							item.setCount(inventoryItemCount);
+							if (cursorItemCount <= 0) { // No more cursor item -> reset
+								cursorSelectedItem = null;
 							} else {
-								if (craftingInventory.consumeCraftItems(craft, inventory, null)) {
-									if (cursorSelectedItem == null) {
-										cursorSelectedItem = craftedItem;
-									} else {
-										cursorSelectedItem.addCount(craftedItem.getCount());
-									}
-								}
+								cursorSelectedItem.setCount(cursorItemCount);
 							}
+						} else { // Different items -> Swap items
+							Item cursorItemBuffer = cursorSelectedItem;
+							cursorSelectedItem = item;
+							container.setItemWithIndex(slot, cursorItemBuffer);
 						}
 					}
-				}
-			}
-			// Chest inventory
-			else if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null && chestSelected.getChestInventory().isMouseInInventory(mX, mY, true)) { // Mouse not on inventory slot and chest open
-				Inventory chestInventory = chestSelected.getChestInventory();
-				int chestSlot = chestInventory.getMouseHoveringSlot(mX, mY, true);
-
-				// Mouse on chest cell
-				if (chestSlot >= 0 && chestSlot < chestInventory.getInventoryCellsAmount()) {
-					Item chestItem = chestInventory.getItemWithIndex(chestSlot);
-					if (leftClicked && !lastLeftClick) { // Left click
-						if (cursorSelectedItem == null) { // No selected item -> select new
-							if (chestItem != null) {
-								cursorSelectedItem = chestItem;
-								chestInventory.setItemWithIndex(chestSlot, null);
-							}
-						} else { // Mouse clicks a second slot
-							// Move item
-							if (chestItem == null) {
-								chestInventory.setItemWithIndex(chestSlot, cursorSelectedItem);
-								cursorSelectedItem = null;
-							} else if (cursorSelectedItem.getId() == chestItem.getId()) { // Combine items
-								int chestItemCount = Math.min(chestItem.getCount() + cursorSelectedItem.getCount(), cursorSelectedItem.getType().getMaxStack());
-								int cursorItemCount = chestItem.getCount() + cursorSelectedItem.getCount() - chestItemCount;
-								chestItem.setCount(chestItemCount);
-								if (cursorItemCount <= 0) { // No more cursor item -> reset
-									cursorSelectedItem = null;
-								} else {
-									cursorSelectedItem.setCount(cursorItemCount);
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = chestItem;
-								chestInventory.setItemWithIndex(chestSlot, cursorItemBuffer);
+				} else if (handler.getMouseManager().isRightJustPressed()) { // Right click
+					if (cursorSelectedItem == null) { // No selected item -> select half of item stack
+						if (item != null) {
+							int itemCountToLeave = item.getCount() / 2; // Half of the item count is left in place
+							int cursorItemCount = item.getCount() - itemCountToLeave; // The rest is taken by the cursor
+							cursorSelectedItem = new Item(cursorItemCount, item.getType());
+							if (itemCountToLeave <= 0) {
+								container.setItemWithIndex(slot, null);
+							} else {
+								item.setCount(itemCountToLeave);
 							}
 						}
-					} else if (rightClicked && !lastRightClick) { // Right click
-						if (cursorSelectedItem == null) { // No selected item -> select half of item stack
-							if (chestItem != null) {
-								int chestItemCount = chestItem.getCount() / 2;
-								int cursorItemCount = chestItem.getCount() - chestItemCount;
-								cursorSelectedItem = new Item(cursorItemCount, chestItem.getType());
-								if (chestItemCount <= 0) {
-									chestInventory.setItemWithIndex(chestSlot, null);
-								} else {
-									chestItem.setCount(chestItemCount);
-								}
+					} else { // Cursor selected item -> select a 2nd slot
+						if (item == null) { // Deposit one item in empty slot
+							container.setItemWithIndex(slot, new Item(1, cursorSelectedItem.getType()));
+
+							if (cursorSelectedItem.getCount() - 1 <= 0) {
+								cursorSelectedItem = null;
+							} else {
+								cursorSelectedItem.addCount(-1);
 							}
-						} else { // Cursor selected item -> select a 2nd slot
-							if (chestItem == null) { // Deposit one item in empty slot
-								chestInventory.setItemWithIndex(chestSlot, new Item(1, cursorSelectedItem.getType()));
+						} else if (item.getId() == cursorSelectedItem.getId()) { // Deposit one item in slot
+							if (item.getCount() + 1 <= item.getType().getMaxStack()) { // slot not full
+								item.addCount(1);
 								if (cursorSelectedItem.getCount() - 1 <= 0) {
 									cursorSelectedItem = null;
 								} else {
 									cursorSelectedItem.addCount(-1);
 								}
-							} else if (chestItem.getId() == cursorSelectedItem.getId()) { // Deposit one item in slot
-								if (chestItem.getCount() + 1 <= chestItem.getType().getMaxStack()) { // slot not full
-									chestItem.addCount(1);
-									if (cursorSelectedItem.getCount() - 1 <= 0) {
-										cursorSelectedItem = null;
-									} else {
-										cursorSelectedItem.addCount(-1);
-									}
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = chestItem;
-								chestInventory.setItemWithIndex(chestSlot, cursorItemBuffer);
 							}
+						} else { // Different items -> Swap items
+							Item cursorItemBuffer = cursorSelectedItem;
+							cursorSelectedItem = item;
+							container.setItemWithIndex(slot, cursorItemBuffer);
 						}
 					}
 				}
-			}
-			// Furnace Inventory
-			else if (selectedInventory == OpenedInventoryEnum.FURNACE && furnaceSelected != null && furnaceSelected.isMouseInInventory(mX, mY)) { // Mouse not on inventory slot and furnace open
-				int furnaceSlot = furnaceSelected.getMouseHoveringSlot(mX, mY, true);
-				// Mouse on furnace cell
-				if (furnaceSlot >= 0 && furnaceSlot < 3) {
-					Item furnaceItem = furnaceSelected.getItemWithIndex(furnaceSlot);
-					if (leftClicked && !lastLeftClick) { // Left click
-						if (cursorSelectedItem == null) { // No selected item -> select new
-							if (furnaceItem != null) {
-								cursorSelectedItem = furnaceItem;
-								furnaceSelected.setItemWithIndex(furnaceSlot, null);
-							}
-						} else { // Mouse clicks a second slot
-							// Move item
-							if (furnaceItem == null) {
-								furnaceSelected.setItemWithIndex(furnaceSlot, cursorSelectedItem);
-								cursorSelectedItem = null;
-							} else if (cursorSelectedItem.getId() == furnaceItem.getId()) { // Combine items
-								int furnaceItemCount = Math.min(furnaceItem.getCount() + cursorSelectedItem.getCount(), cursorSelectedItem.getType().getMaxStack());
-								int cursorItemCount = furnaceItem.getCount() + cursorSelectedItem.getCount() - furnaceItemCount;
-								furnaceItem.setCount(furnaceItemCount);
-								if (cursorItemCount <= 0) { // No more cursor item -> reset
-									cursorSelectedItem = null;
-								} else {
-									cursorSelectedItem.setCount(cursorItemCount);
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = furnaceItem;
-								furnaceSelected.setItemWithIndex(furnaceSlot, cursorItemBuffer);
-							}
-						}
-					} else if (rightClicked && !lastRightClick) { // Right click
-						if (cursorSelectedItem == null) { // No selected item -> select half of item stack
-							if (furnaceItem != null) {
-								int furnaceItemCount = furnaceItem.getCount() / 2;
-								int cursorItemCount = furnaceItem.getCount() - furnaceItemCount;
-								cursorSelectedItem = new Item(cursorItemCount, furnaceItem.getType());
-								if (furnaceItemCount <= 0) {
-									furnaceSelected.setItemWithIndex(furnaceSlot, null);
-								} else {
-									furnaceItem.setCount(furnaceItemCount);
-								}
-							}
-						} else { // Cursor selected item -> select a 2nd slot
-							if (furnaceItem == null) { // Deposit one item in empty slot
-								furnaceSelected.setItemWithIndex(furnaceSlot, new Item(1, cursorSelectedItem.getType()));
-								if (cursorSelectedItem.getCount() - 1 <= 0) {
-									cursorSelectedItem = null;
-								} else {
-									cursorSelectedItem.addCount(-1);
-								}
-							} else if (furnaceItem.getId() == cursorSelectedItem.getId()) { // Deposit one item in slot
-								if (furnaceItem.getCount() + 1 <= furnaceItem.getType().getMaxStack()) { // slot not full
-									furnaceItem.addCount(1);
-									if (cursorSelectedItem.getCount() - 1 <= 0) {
-										cursorSelectedItem = null;
-									} else {
-										cursorSelectedItem.addCount(-1);
-									}
-								}
-							} else { // Different items -> Swap items
-								Item cursorItemBuffer = cursorSelectedItem;
-								cursorSelectedItem = furnaceItem;
-								furnaceSelected.setItemWithIndex(furnaceSlot, cursorItemBuffer);
-							}
-						}
-					}
-				}
-			}
-		} else { // Inventory closed
-			if (cursorSelectedItem != null) { // Item selected
-				// Drop or transfer item
-
-				// Add items to inventory and store remaining items
-				@SuppressWarnings("unused")
-				Item itemsLeft = inventory.addItem(cursorSelectedItem);
-				cursorSelectedItem = null;
-
-				// TODO: itemsLeft should be dropped
 			}
 		}
 
-		lastLeftClick = leftClicked;
-		lastRightClick = rightClicked;
+		return mouseHoveringContainer;
+	}
+
+	private boolean handleCraftingInventoryAction(int mX, int mY) {
+		if (!inventoryOpen) return false;
+
+		boolean mouseHoveringCraftingInventory = craftingInventory.isMouseHoveringUI(mX, mY);
+		if (mouseHoveringCraftingInventory) {
+			if (handler.getMouseManager().isLeftJustPressed() && !craftingInventory.clickCategory(mX, mY)) {
+				CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY);
+				if (craft != null) {
+					Item craftedItem = craft.craftedItem().getCopy();
+					ISlotContainer secondaryContainer = getSelectedInventoryContainer();
+					if (handler.getKeyboardManager().keyDown(KeyboardKey.KEY_LEFT_SHIFT)) { // Craft a stack or as much as possible
+						int amountToCraft = Math.min(inventory.getMaxAmountStorable(craftedItem.getType()), craftedItem.getType().getMaxStack());
+						Item itemCrafted = craftingInventory.consumeMaxCraftItems(craft, inventory, secondaryContainer, amountToCraft);
+						// Craft successful (can be less than amountCrafted or null)
+						if (itemCrafted != null) inventory.addItem(itemCrafted);
+					} else if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
+						if (craftingInventory.consumeCraftItems(craft, inventory, secondaryContainer)) { // Craft once
+							// Craft successful
+							if (cursorSelectedItem == null) {
+								cursorSelectedItem = craftedItem;
+							} else {
+								cursorSelectedItem.addCount(craftedItem.getCount());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return mouseHoveringCraftingInventory;
+	}
+
+	private void updateAvailableCrafts() {
+		ArrayList<Item> availableItems = inventory.getItemsListCopy();
+		ISlotContainer container = getSelectedInventoryContainer();
+		if (container != null) {
+			availableItems = Inventory.combineItemsLists(availableItems, container.getItemsListCopy());
+		}
+		craftingInventory.updateAvailableCrafts(availableItems);
 	}
 	
 	public void render() {
 		// Render inventory and toolbar
 		inventory.render(inventoryOpen);
 		
-		// Render crafting inventory
 		if (inventoryOpen) {
-			ArrayList<Item> availableItems = inventory.getItemsListCopy();
-			
+			// Render crafting inventory
+			craftingInventory.render();
+
+			// Render container
 			if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
-				availableItems = Inventory.combineItemsLists(availableItems, chestSelected.getChestInventory().getItemsListCopy());
+				chestSelected.renderChestInventory();
+			} else if (selectedInventory == OpenedInventoryEnum.FURNACE && furnaceSelected != null) {
+				furnaceSelected.renderFurnaceInventory();
 			}
-			
-			craftingInventory.render(availableItems);
-		}
-		
-		// Render open chest
-		if (selectedInventory == OpenedInventoryEnum.CHEST && chestSelected != null) {
-			chestSelected.renderChestInventory();
-		} else if (selectedInventory == OpenedInventoryEnum.FURNACE && furnaceSelected != null) {
-			furnaceSelected.renderFurnaceInventory();
 		}
 		
 		// Render cursor item
+		int mX = handler.getMouseManager().getMouseX();
+		int mY = handler.getMouseManager().getMouseY();
+		ISlotContainer container = getSelectedInventoryContainer();
 		if (cursorSelectedItem != null) {
-			int mouseX = handler.getMouseManager().getMouseX();
-			int mouseY = handler.getMouseManager().getMouseY();
-			Inventory.renderItem(mouseX, mouseY, cursorSelectedItem, true);
+			Inventory.renderItem(mX, mY, cursorSelectedItem, true);
+		} else {
+			Item tooltipItem = null;
+
+			if (inventoryOpen) {
+				// Inventory
+				tooltipItem = inventory.getMouseSlotItem(mX, mY, inventoryOpen);
+
+				// Chest inventory
+				if (tooltipItem == null && container != null) tooltipItem = container.getMouseSlotItem(mX, mY, inventoryOpen);
+
+				// Crafting inventory
+				if (tooltipItem == null && craftingInventory.isMouseHoveringUI(mX, mY)) {
+					CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY);
+					if (craft != null) {
+						tooltipItem = craft.craftedItem();
+					}
+				}
+			}
+
+			if (tooltipItem != null) {
+				Tooltip.drawToolTip(mX, mY, tooltipItem);
+			}
 		}
 	}
 	
@@ -426,7 +339,6 @@ public class PlayerInventory {
 				inventory.setSelectedToolbarItem(null);
 			}
 		}
-		
 	}
 	
 	// Add items to inventory
@@ -435,30 +347,30 @@ public class PlayerInventory {
 	}
 	
 	// Check if the mouse is in the inventory or in any opened inventories
-	public boolean isMouseInInventory() {
+	public boolean isMouseInAnyInventory() {
 		int mX = handler.getMouseManager().getMouseX();
 		int mY = handler.getMouseManager().getMouseY();
 
-		if (inventory.isMouseInInventory(mX, mY, inventoryOpen)) {
-			return true;
-		} else if (inventoryOpen && craftingInventory.isMouseInInventory(mX, mY)) {
+		if (inventory.isMouseHoveringUI(mX, mY, inventoryOpen)) {
 			return true;
 		}
 
-        return switch (selectedInventory) {
-            case CHEST -> chestSelected.getChestInventory().isMouseInInventory(mX, mY, true);
-            case FURNACE -> furnaceSelected.isMouseInInventory(mX, mY);
-            default -> false;
-        };
+		if (inventoryOpen) {
+			if (craftingInventory.isMouseHoveringUI(mX, mY)) {
+				return true;
+			}
+
+			ISlotContainer selectedInventoryContainer = getSelectedInventoryContainer();
+			if (selectedInventoryContainer != null) {
+				return selectedInventoryContainer.isMouseHoveringUI(mX, mY, inventoryOpen);
+			}
+		}
+
+		return false;
 	}
 	
 	public void toggleInventory() {
-		inventoryOpen = !inventoryOpen;
-		if (!inventoryOpen) {
-			selectedInventory = OpenedInventoryEnum.NONE;
-			chestSelected = null;
-			furnaceSelected = null;
-		}
+		setInventoryOpen(!inventoryOpen);
 	}
 	
 	public Item getToolbarItem() {
@@ -476,6 +388,17 @@ public class PlayerInventory {
 			selectedInventory = OpenedInventoryEnum.NONE;
 			chestSelected = null;
 			furnaceSelected = null;
+
+			if (cursorSelectedItem != null) { // Item selected
+				// Transfer or drop item
+
+				// Add items to inventory and store remaining items
+				Item itemsLeft = inventory.addItem(cursorSelectedItem);
+				cursorSelectedItem = null;
+
+				// TODO: itemsLeft should be dropped
+				System.err.println("Not enough space in inventory to store the items, cursor item was deleted");
+			}
 		}
 	}
 	
@@ -483,23 +406,37 @@ public class PlayerInventory {
 		return selectedInventory;
 	}
 	
-	public void setSelectedInventory(OpenedInventoryEnum selectedInventory) {
-		this.selectedInventory = selectedInventory;
+	public void setSelectedInventory(OpenedInventoryEnum newSelectedInventory, TileEntity tileEntity) {
+		if (newSelectedInventory == OpenedInventoryEnum.CHEST && tileEntity instanceof ChestTileEntity chestTileEntity) {
+			chestSelected = chestTileEntity;
+			furnaceSelected = null;
+		} else if (newSelectedInventory == OpenedInventoryEnum.FURNACE && tileEntity instanceof FurnaceTileEntity furnaceTileEntity) {
+			chestSelected = null;
+			furnaceSelected = furnaceTileEntity;
+		} else if (newSelectedInventory == OpenedInventoryEnum.NONE && tileEntity == null) {
+			chestSelected = null;
+			furnaceSelected = null;
+		} else {
+			System.err.println("PlayerInvetory.setSelectedInventory: Invalid OpenedInventoryEnum=" + newSelectedInventory);
+			return;
+		}
+
+		selectedInventory = newSelectedInventory;
+	}
+
+	public ISlotContainer getSelectedInventoryContainer() {
+		return switch (selectedInventory) {
+			case CHEST -> chestSelected.getChestInventory();
+			case FURNACE -> furnaceSelected;
+			default -> null;
+		};
 	}
 	
 	public ChestTileEntity getChestSelected() {
 		return chestSelected;
 	}
-	
-	public void setChestSelected(ChestTileEntity chestSelected) {
-		this.chestSelected = chestSelected;
-	}
-	
+
 	public FurnaceTileEntity getFurnaceSelected() {
 		return furnaceSelected;
-	}
-	
-	public void setFurnaceSelected(FurnaceTileEntity furnaceSelected) {
-		this.furnaceSelected = furnaceSelected;
 	}
 }

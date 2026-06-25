@@ -7,13 +7,14 @@ import dev.sunslihgt.mine_game_2d.Handler;
 import dev.sunslihgt.mine_game_2d.block.Block;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
-import dev.sunslihgt.mine_game_2d.gfx.Text;
+import dev.sunslihgt.mine_game_2d.gfx.font.Text;
 import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 import dev.sunslihgt.mine_game_2d.utils.Utils;
 
 public class Player {
 
 	public static final int PLAYER_WIDTH = 28, PLAYER_HEIGHT = 56;
+	public static final int PLAYER_WIDTH_HALF = PLAYER_WIDTH / 2;
 
 	// Used to be ACC = 8, JUMP = 25, GRAVITY = 1.5f, MAX_FALL_SPEED = 30
 	private static final int PLAYER_ACCELERATION = 3;
@@ -26,8 +27,6 @@ public class Player {
 	
 	private static final int clickCooldown = 50;
 	private long lastRightClickTime = 0;
-//	private boolean lastLeftClicked = false;
-	private boolean lastRightClicked = false;
 
 	private float x, y;
 	private float velX, velY;
@@ -210,8 +209,8 @@ public class Player {
 		// Old player positions
 		float opTop = y - PLAYER_HEIGHT;
 		float opBottom = y;
-		float opLeft = x - PLAYER_WIDTH / 2;
-		float opRight = x + PLAYER_WIDTH / 2;
+		float opLeft = x - PLAYER_WIDTH_HALF;
+		float opRight = x + PLAYER_WIDTH_HALF;
 
 		// New player positions
 		float pTop = opTop + velY;
@@ -246,12 +245,12 @@ public class Player {
 						} else if (pLeft <= bRight && opLeft > bRight && velX != 0) { // Obstacle Left
 //							System.out.println("Collision left ground: " + touchingGround);
 							velX = 0;
-							x = bRight + 0.01f + PLAYER_WIDTH / 2;
+							x = bRight + 0.01f + PLAYER_WIDTH_HALF;
 							return true;
 						} else if (pRight >= bLeft && opRight < bLeft && velX != 0) { // Obstacle Right
 //							System.out.println("Collision right");
 							velX = 0;
-							x = bLeft - 0.01f - PLAYER_WIDTH / 2;
+							x = bLeft - 0.01f - PLAYER_WIDTH_HALF;
 							return true;
 						} else if (pTop <= bBottom && opTop > bBottom && velY != 0) { // Obstacle Up
 //							System.out.println("Collision down");
@@ -268,8 +267,9 @@ public class Player {
 	}
 
 	private void checkMouseInput() {
-		boolean leftClicked = handler.getMouseManager().isLeftPressed();
-		boolean rightClicked = handler.getMouseManager().isRightPressed();
+		boolean leftClicked = handler.getMouseManager().isLeftDown();
+		boolean rightClicked = handler.getMouseManager().isRightDown();
+		boolean rightJustClicked = handler.getMouseManager().isRightJustPressed();
 
 		// Left click
 		if (leftClicked) {
@@ -277,47 +277,35 @@ public class Player {
 		}
 
 		// Right click
-		if (rightClicked && lastRightClickTime + clickCooldown < System.currentTimeMillis()) {
+		if (rightJustClicked || (rightClicked && lastRightClickTime + clickCooldown < System.currentTimeMillis())) {
 			lastRightClickTime = System.currentTimeMillis();
 
-			// Try to use a block (eg: chest), else try to use an item (eg: place block)
-			if (!lastRightClicked) {
-				int playerCursorX = playerCursor.getbX();
-				int playerCursorY = playerCursor.getbY();
+			int playerCursorX = playerCursor.getbX();
+			int playerCursorY = playerCursor.getbY();
 
-				if (!playerInventory.isMouseInInventory()) {
-					if (!handler.getWorld().rightClickBlock(playerCursorX, playerCursorY)) {
-						// Right click action of item
-						if (playerInventory.hasSelectedToolbarItem()) {
-							playerInventory.selectedItemRightClick();
-						}
-					}
-				}
-
-			} else {
+			// If right click just pressed or the current block is right-clicked but the event can keep propagating
+			// -> Try to use a block (eg: chest), else try to use an item (eg: place block)
+			boolean blockRightClickUsed = !playerInventory.isMouseInAnyInventory() && !handler.getWorld().rightClickBlock(playerCursorX, playerCursorY);
+			if (rightJustClicked || !blockRightClickUsed) {
 				// Right click action of item
 				if (playerInventory.hasSelectedToolbarItem()) {
 					playerInventory.selectedItemRightClick();
 				}
 			}
-
 		}
-
-//		lastLeftClicked = leftClicked;
-		lastRightClicked = rightClicked;
 	}
 
 	public void render() {
 		int xOffset = handler.getGameCamera().getXOffset();
 		int yOffset = handler.getGameCamera().getYOffset();
 
-		int drawX = (int) (x - xOffset - PLAYER_WIDTH / 2);
+		int drawX = (int) (x - xOffset - PLAYER_WIDTH_HALF);
 		int drawY = (int) (y - yOffset - PLAYER_HEIGHT);
 
 		// Debug player position
 		Raylib.drawRectangle(drawX, drawY, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_COLOR);
 		String debugText = "Player x=" + x + ", y=" + y + ", drawX=" + drawX + ", drawY=" + drawY;
-		Text.drawString(debugText, handler.getWidth() / 2, 160, false, true, Raylib.BLACK, Assets.inventory_font);
+		Text.drawString(debugText, handler.getWidth() - 20, 140, Assets.default_font, Text.FontAnchor.MIDDLE_RIGHT, Raylib.BLACK);
 
 		playerCursor.renderBlockOutline();
 
@@ -351,8 +339,8 @@ public class Player {
 		// Player positions
 		float pTop = y - PLAYER_HEIGHT;
 		float pBottom = y;
-		float pLeft = x - PLAYER_WIDTH / 2;
-		float pRight = x + PLAYER_WIDTH / 2;
+		float pLeft = x - PLAYER_WIDTH_HALF;
+		float pRight = x + PLAYER_WIDTH_HALF;
 
 		// Block positions
 		int bTop = Utils.convertBlockToPixel(bY);

@@ -1,11 +1,15 @@
 package dev.sunslihgt.mine_game_2d.block.tile_entities_list;
 
 import dev.sunslihgt.mine_game_2d.Handler;
+import dev.sunslihgt.mine_game_2d.block.BlockDrop;
 import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.block.TileEntity;
+import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.player.Inventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory;
 import dev.sunslihgt.mine_game_2d.player.PlayerInventory.OpenedInventoryEnum;
+
+import java.util.ArrayList;
 
 public class ChestTileEntity extends TileEntity {
 	
@@ -25,22 +29,42 @@ public class ChestTileEntity extends TileEntity {
 	
 	@Override
 	public boolean rightClickBlock() {
-		// Open or close chest
-		
+		// Open or close chest on mouse just pressed
+		if (!handler.getMouseManager().isRightJustPressed()) return false;
+
 		PlayerInventory playerInventory = handler.getPlayer().getPlayerInventory();
 		
 		if (playerInventory.getSelectedInventory() != OpenedInventoryEnum.CHEST || playerInventory.getChestSelected() != this) {
-			playerInventory.setSelectedInventory(OpenedInventoryEnum.CHEST);
-			playerInventory.setChestSelected(this); // Set as player's chest
-			playerInventory.setFurnaceSelected(null); // Remove player's furnace
 			playerInventory.setInventoryOpen(true); // Open inventory
-		} else { // Close inventory and chest
-			playerInventory.setInventoryOpen(false); // Close inventory
+			playerInventory.setSelectedInventory(OpenedInventoryEnum.CHEST, this);
+		} else { // Close chest
+			playerInventory.setSelectedInventory(OpenedInventoryEnum.NONE, null);
 		}
 		
 		return true; // Prevent from using an item's right click action
 	}
-	
+
+	/**
+	 * @return A list of items containing the block and the items in its inventory.
+	 */
+	@Override
+	public ArrayList<Item> getDrops() {
+		ArrayList<Item> drops = new ArrayList<Item>();
+
+		// The block drop itself
+		for (BlockDrop blockDrop : type.getBlockDrops()) {
+			if (blockDrop != null) {
+				drops.addAll(blockDrop.getDrops());
+			}
+		}
+
+		// Add items in the container
+		drops.addAll(chestInventory.getItemsListCopy());
+		chestInventory.clearInventory();
+
+		return drops;
+	}
+
 	// Called by the player when the chest is opened
 	public void renderChestInventory() {
 		// Chest is rendered only if opened

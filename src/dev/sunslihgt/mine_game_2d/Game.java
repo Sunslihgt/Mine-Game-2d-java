@@ -6,6 +6,7 @@ import dev.sunslihgt.mine_game_2d.block.BlockType;
 import dev.sunslihgt.mine_game_2d.display.Display;
 import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.GameCamera;
+import dev.sunslihgt.mine_game_2d.gfx.Tooltip;
 import dev.sunslihgt.mine_game_2d.gfx.lighting.Lighting;
 import dev.sunslihgt.mine_game_2d.input.KeyManager;
 import dev.sunslihgt.mine_game_2d.input.MouseManager;
@@ -60,6 +61,7 @@ public class Game {
 		CookingRecipes.init();
 		CraftingRecipes.init();
 		handler = new Handler(this);
+		Tooltip.init(handler);
 		player = new Player(0, 0, handler);
 		gameCamera = new GameCamera(handler);
 		world = new World(handler);
@@ -125,7 +127,7 @@ public class Game {
 		player.render();
 
 		// Debug
-		Raylib.drawFPS(width - 300, 100);
+		Raylib.drawFPS(width - 94, 100);
 
 		// End Rendering
 		Raylib.endDrawing();

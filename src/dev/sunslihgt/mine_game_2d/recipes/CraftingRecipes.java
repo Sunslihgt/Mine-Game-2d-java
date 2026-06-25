@@ -46,25 +46,26 @@ public class CraftingRecipes {
 		ironPickaxeCost.add(new Item(3, ItemType.ironIngotItem));
 		craftingRecipes.add(new CraftingRecipe(ironPickaxeCost, new Item(1, ItemType.ironPickaxeItem), RecipeCategory.TOOL));
 	}
-	
+
+	/**
+	 * Check if a CraftRecipe is affordable.
+	 * @param craft Craft recipe, cannot have the same ItemType multiple times.
+	 * @param itemsAvailable Items available, cannot have duplicate items. Items should be merged together even if they overflow their max count.
+	 * @return true if the recipe is affordable
+	 */
 	public static boolean isCraftAffordable(CraftingRecipe craft, ArrayList<Item> itemsAvailable) {
 		ArrayList<Item> craftCost = craft.itemsCost();
-		
+
 		for (Item craftItem : craftCost) {
 			int itemRemaining = craftItem.getCount();
-			for (Iterator<Item> iterator = itemsAvailable.iterator(); iterator.hasNext();) {
-				if (itemRemaining <= 0) {
-					break;
-				}
-				Item availableItem = iterator.next();
+			for (Item availableItem : itemsAvailable) {
 				if (craftItem.getId() == availableItem.getId()) {
 					int itemUsed = Math.min(itemRemaining, availableItem.getCount());
 					itemRemaining -= itemUsed;
-					if (availableItem.getCount() - itemUsed <= 0) {
-						iterator.remove();
-					} else {
-						availableItem.addCount(-itemUsed);
-					}
+				}
+
+				if (itemRemaining <= 0) {
+					break;
 				}
 			}
 			
