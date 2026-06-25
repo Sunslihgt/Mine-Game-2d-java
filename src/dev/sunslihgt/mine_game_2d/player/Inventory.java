@@ -10,6 +10,7 @@ import dev.sunslihgt.mine_game_2d.gfx.Assets;
 import dev.sunslihgt.mine_game_2d.gfx.font.Text;
 import dev.sunslihgt.mine_game_2d.gfx.font.Text.FontAnchor;
 import dev.sunslihgt.mine_game_2d.item.Item;
+import dev.sunslihgt.mine_game_2d.item.ItemType;
 import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
 public class Inventory implements ISlotContainer {
@@ -175,7 +176,8 @@ public class Inventory implements ISlotContainer {
 	}
 
 	/**
-	 * Add items to inventory. The remaining items
+	 * Add items to inventory, according to the inventory's preferences.
+	 * @return The remaining items
 	 */
 	@Override
 	public Item addItem(Item item) {
@@ -401,6 +403,20 @@ public class Inventory implements ISlotContainer {
             }
         }
 		return count;
+	}
+
+	/**
+	 * Calculate the maximum amount storable for an ItemType in the container.
+	 * @param newItemType The ItemType
+	 * @return The amount that can be added to the container or 0.
+	 */
+	public int getMaxAmountStorable(ItemType newItemType) {
+		int amount = 0;
+		for (Item item : items) {
+			if (item == null) amount += newItemType.getMaxStack(); // Empty slot
+			else if (item.getId() == newItemType.getId()) amount += newItemType.getMaxStack() - item.getCount();
+		}
+		return amount;
 	}
 
 	/**

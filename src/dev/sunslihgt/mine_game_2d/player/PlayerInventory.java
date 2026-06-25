@@ -234,9 +234,14 @@ public class PlayerInventory {
 				CraftingRecipe craft = craftingInventory.getMouseHoveringCraft(mX, mY);
 				if (craft != null) {
 					Item craftedItem = craft.craftedItem().getCopy();
-					if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
-						ISlotContainer secondaryContainer = getSelectedInventoryContainer();
-						if (craftingInventory.consumeCraftItems(craft, inventory, secondaryContainer)) {
+					ISlotContainer secondaryContainer = getSelectedInventoryContainer();
+					if (handler.getKeyboardManager().keyDown(KeyboardKey.KEY_LEFT_SHIFT)) { // Craft a stack or as much as possible
+						int amountToCraft = Math.min(inventory.getMaxAmountStorable(craftedItem.getType()), craftedItem.getType().getMaxStack());
+						Item itemCrafted = craftingInventory.consumeMaxCraftItems(craft, inventory, secondaryContainer, amountToCraft);
+						// Craft successful (can be less than amountCrafted or null)
+						if (itemCrafted != null) inventory.addItem(itemCrafted);
+					} else if (cursorSelectedItem == null || (cursorSelectedItem.getId() == craftedItem.getId() && cursorSelectedItem.getCount() + craftedItem.getCount() <= craftedItem.getType().getMaxStack())) {
+						if (craftingInventory.consumeCraftItems(craft, inventory, secondaryContainer)) { // Craft once
 							// Craft successful
 							if (cursorSelectedItem == null) {
 								cursorSelectedItem = craftedItem;

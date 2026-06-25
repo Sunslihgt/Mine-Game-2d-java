@@ -143,6 +143,29 @@ public class CraftingInventory {
 		
 		return null; // No slot hovered
 	}
+
+	/**
+	 * Craft as much of the item as possible. Only consume available items.
+	 * @param craft {@link CraftingRecipe}
+	 * @param inventory {@link Inventory}
+	 * @param secondaryContainer {@link ISlotContainer} secondary container where items can be consumed
+	 * @param maxAmount Maximum amount to craft. The actual crafted amount can be smaller.
+	 * @return The item crafted with the correct count or null if none were crafted.
+	 */
+	public Item consumeMaxCraftItems(CraftingRecipe craft, Inventory inventory, ISlotContainer secondaryContainer, int maxAmount) {
+		int amountPerCraft = craft.craftedItem().getCount();
+		if (maxAmount < amountPerCraft) return null;
+
+		int amountCrafted = 0;
+		boolean craftSuccessful = consumeCraftItems(craft, inventory, secondaryContainer);
+		while (amountCrafted + amountPerCraft <= maxAmount && craftSuccessful) {
+			amountCrafted += amountPerCraft;
+			craftSuccessful = amountCrafted + amountPerCraft <= maxAmount && consumeCraftItems(craft, inventory, secondaryContainer);
+		}
+
+		if (amountCrafted == 0) return null;
+		else return new Item(amountCrafted, craft.craftedItem().getType());
+	}
 	
 	// Consume crafting items and return true if everything is working
 	public boolean consumeCraftItems(CraftingRecipe craft, ISlotContainer primaryContainer, ISlotContainer secondaryContainer) {
