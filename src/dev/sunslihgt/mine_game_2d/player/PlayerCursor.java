@@ -23,10 +23,10 @@ public class PlayerCursor {
 		bX = Utils.convertPixelToBlock(handler.getMouseManager().getMouseX() + handler.getGameCamera().getXOffset());
 		bY = Utils.convertPixelToBlock(handler.getMouseManager().getMouseY() + handler.getGameCamera().getYOffset());
 
-		visible = !handler.getPlayer().getPlayerInventory().isMouseInInventory() && handler.getMouseManager().isMouseInScreen();
+		visible = !handler.getPlayer().getPlayerInventory().isMouseInAnyInventory() && handler.getMouseManager().isMouseInScreen();
 		
 //		System.out.println("Mouse bX: " + bX + ", bY: " + bY);
-//		System.out.println(visible + ", mouse inv: " + handler.getPlayer().getPlayerInventory().isMouseInInventory() + ", mouse screen: " + handler.getMouseManager().isMouseInScreen());
+//		System.out.println(visible + ", mouse inv: " + handler.getPlayer().getPlayerInventory().isMouseHoveringUI() + ", mouse screen: " + handler.getMouseManager().isMouseInScreen());
 	}
 	
 	public void renderBlockOutline() {

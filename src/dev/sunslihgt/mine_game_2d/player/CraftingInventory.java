@@ -20,13 +20,19 @@ public class CraftingInventory {
 
 	private final int CATEGORY_COUNT = 4;
 	private int currentCategoryIndex = 0;
-	
-	public CraftingInventory() {
-		
+
+	private ArrayList<CraftingRecipe> categoryAvailableCrafts;
+
+	/**
+	 * Update the local list of available crafts given available items. Run before and after crafting.
+	 * @param availableItems List of the available items. Same item types must be merged together even if it exceeds the maxCount.
+	 */
+	public void updateAvailableCrafts(ArrayList<Item> availableItems) {
+		categoryAvailableCrafts = CraftingRecipes.getAvailableCraftsList(availableItems, currentCategoryIndex);
 	}
-	
+
 	// Render crafting inventory
-	public void render(ArrayList<Item> availableItems) {
+	public void render() {
 		// Background
 		Raylib.drawRectangle(INVENTORY_X_OFFSET, INVENTORY_Y_OFFSET, INVENTORY_WIDTH, INVENTORY_HEIGHT, Inventory.INVENTORY_COLOR);
 		
@@ -34,7 +40,7 @@ public class CraftingInventory {
 		renderCategories();
 		
 		// Crafts
-		renderCrafts(availableItems);
+		renderCrafts();
 	}
 	
 	public void renderCategories() {
@@ -75,9 +81,7 @@ public class CraftingInventory {
 		}
 	}
 	
-	public void renderCrafts(ArrayList<Item> availableItems) {
-		ArrayList<CraftingRecipe> availableCrafts = CraftingRecipes.getAvailableCraftsList(availableItems, currentCategoryIndex);
-				
+	public void renderCrafts() {
 		for (int i = 0; i < 9 * 3; i++) {
 			int slotX = i % 9;
 			int slotY = Math.floorDiv(i, 9);
@@ -88,29 +92,25 @@ public class CraftingInventory {
 
 			Raylib.drawRectangle(cellX, cellY, CELL_SIZE, CELL_SIZE, Inventory.INVENTORY_CELL_COLOR);
 			
-			if (availableCrafts.size() > i) {
+			if (categoryAvailableCrafts.size() > i) {
 				int craftOffset = (CELL_SIZE - Block.BLOCK_WIDTH) / 2;
 				int craftX = cellX + craftOffset;
 				int craftY = cellY + craftOffset;
 				
-				Item craftItem = availableCrafts.get(i).craftedItem();
+				Item craftItem = categoryAvailableCrafts.get(i).craftedItem();
 				Inventory.renderItem(craftX, craftY, craftItem, false);
 			}
 		}
 	}
 	
 	// Check if the mouse is in the crafting inventory
-	public boolean isMouseInInventory(int mX, int mY) {
-		if (mX >= INVENTORY_X_OFFSET && mX <= INVENTORY_X_OFFSET + INVENTORY_WIDTH && mY >= INVENTORY_Y_OFFSET && mY <= INVENTORY_Y_OFFSET + INVENTORY_HEIGHT) {
-			return true;
-		}
-		
-		return false;
-	}
+	public boolean isMouseHoveringUI(int mX, int mY) {
+        return mX >= INVENTORY_X_OFFSET && mX <= INVENTORY_X_OFFSET + INVENTORY_WIDTH && mY >= INVENTORY_Y_OFFSET && mY <= INVENTORY_Y_OFFSET + INVENTORY_HEIGHT;
+    }
 	
 	// Check if the mouse is in the crafting inventory
 	public boolean clickCategory(int mX, int mY) {
-		if (!isMouseInInventory(mX, mY)) {
+		if (!isMouseHoveringUI(mX, mY)) {
 			return false;
 		}
 		
@@ -127,10 +127,8 @@ public class CraftingInventory {
 	}
 	
 	// Get the slot hovered by the mouse (if none return -1)
-	public CraftingRecipe getMouseHoveringCraft(int mX, int mY, ArrayList<Item> availableItems) {
-		ArrayList<CraftingRecipe> availableCrafts = CraftingRecipes.getAvailableCraftsList(availableItems, currentCategoryIndex);
-		
-		for (int i = 0; i < availableCrafts.size(); i++) {
+	public CraftingRecipe getMouseHoveringCraft(int mX, int mY) {
+		for (int i = 0; i < categoryAvailableCrafts.size(); i++) {
 			int slotX = i % 9;
 			int slotY = Math.floorDiv(i, 9);
 			
@@ -139,7 +137,7 @@ public class CraftingInventory {
 			int cellY = INVENTORY_Y_OFFSET + INVENTORY_BORDER * 2 + CELL_SIZE + INVENTORY_MARGIN + slotY * (CELL_SIZE + INVENTORY_MARGIN);
 			
 			if (mX >= cellX && mX <= cellX + CELL_SIZE && mY >= cellY && mY <= cellY + CELL_SIZE) {
-				return availableCrafts.get(i);
+				return categoryAvailableCrafts.get(i);
 			}
 		}
 		
@@ -147,12 +145,12 @@ public class CraftingInventory {
 	}
 	
 	// Consume crafting items and return true if everything is working
-	public boolean consumeCraftItems(CraftingRecipe craft, Inventory inventory1, Inventory inventory2) {
+	public boolean consumeCraftItems(CraftingRecipe craft, ISlotContainer primaryContainer, ISlotContainer secondaryContainer) {
 		if (craft == null) {
 			System.err.println("No craft provided in CraftingInventory.consumeCraftItems");
 			return false;
-		} else if (inventory1 == null) {
-			System.err.println("No valid inventory1 provided in CraftingInventory.consumeCraftItems");
+		} else if (primaryContainer == null) {
+			System.err.println("No valid primaryContainer provided in CraftingInventory.consumeCraftItems");
 			return false;
 		}
 		
@@ -160,24 +158,24 @@ public class CraftingInventory {
 		for (Item itemCost : itemsCost) {
 			int itemCostCountRemaining = itemCost.getCount();
 			
-			int itemCountInventory1 = inventory1.countItemId(itemCost.getId());
+			int itemCountInventory1 = primaryContainer.countItemId(itemCost.getId());
 			int itemCountInventory2 = 0;
-			if (inventory2 != null) {
-				itemCountInventory2 = inventory2.countItemId(itemCost.getId());
+			if (secondaryContainer != null) {
+				itemCountInventory2 = secondaryContainer.countItemId(itemCost.getId());
 			}
 			
 			if (itemCountInventory1 >= itemCost.getCount()) {
 				// Enough items in inventory 1 -> consume items
-				if (!inventory1.removeItem(itemCost)) {
+				if (!primaryContainer.removeItem(itemCost)) {
 					System.err.println("Craft went wrong while consuming items in 1 inventory in CraftingInventory.consumeCraftItems");
 					return false; // Something went wrong
 				}
-			} else if (itemCountInventory1 + itemCountInventory2 >= itemCost.getCount()) {
+			} else if (secondaryContainer != null && itemCountInventory1 + itemCountInventory2 >= itemCost.getCount()) {
 				// Enough items in both inventories -> consume items from both inventories
 				int itemsConsumedInventory1 = Math.min(itemCountInventory1, itemCostCountRemaining);
 				int itemsConsumedInventory2 = Math.min(itemCountInventory2, itemCostCountRemaining - itemCountInventory1);
 				
-				if (!inventory1.removeItem(new Item(itemsConsumedInventory1, itemCost.getType())) || !inventory2.removeItem(new Item(itemsConsumedInventory2, itemCost.getType()))) {
+				if (!primaryContainer.removeItem(new Item(itemsConsumedInventory1, itemCost.getType())) || !secondaryContainer.removeItem(new Item(itemsConsumedInventory2, itemCost.getType()))) {
 					System.err.println("Craft went wrong while consuming items in 2 inventories in CraftingInventory.consumeCraftItems");
 					return false;
 				}

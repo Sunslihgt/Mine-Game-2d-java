@@ -12,7 +12,7 @@ import dev.sunslihgt.mine_game_2d.gfx.font.Text.FontAnchor;
 import dev.sunslihgt.mine_game_2d.item.Item;
 import dev.sunslihgt.mine_game_2d.utils.RaylibUtils;
 
-public class Inventory {
+public class Inventory implements ISlotContainer {
 	
 	// Inventory
 	public final static int INVENTORY_SCREEN_CELL_SIZE = 40;
@@ -61,7 +61,7 @@ public class Inventory {
 		// Toolbar and Items
 		this.hasToolbar = hasToolbar;
 		inventoryCellsAmount = inventoryWidth * inventoryHeight;
-		if (hasToolbar) {
+		if (hasToolbar) { // Add a row
 			inventoryCellsAmount += inventoryWidth;
 		}
 		
@@ -173,8 +173,11 @@ public class Inventory {
 			Text.drawString(Integer.toString(item.getCount()), countX, countY, Assets.inventory_font, FontAnchor.BOTTOM_RIGHT, Raylib.WHITE);
 		}
 	}
-	
-	// Add items to inventory
+
+	/**
+	 * Add items to inventory. The remaining items
+	 */
+	@Override
 	public Item addItem(Item item) {
 		// Try to combine with already existing items
 		for (int i = 0; i < inventoryCellsAmount; i++) {
@@ -198,50 +201,31 @@ public class Inventory {
 			}
 		}
 		
-		return item; // Items left that should be dropped on the ground
+		return item; // Items remaining
 	}
-	
-	// Add items to inventory
+
+
+	/**
+	 * Add item list to inventory. Returns a list with the remaining items
+	 */
+	@Override
 	public ArrayList<Item> addItemList(ArrayList<Item> newItems) {
 		for (Iterator<Item> itemsIterator = newItems.iterator(); itemsIterator.hasNext();) {
 			Item item = itemsIterator.next();
-			
-			boolean transferred = false;
-			// Try to combine with already existing items
-			for (int i = 0; i < inventoryCellsAmount; i++) {
-				if (items[i] != null && items[i].getId() == item.getId()) {
-					int itemsTransferred = Math.min(item.getCount() + items[i].getCount(), item.getType().getMaxStack()) - items[i].getCount();
-					items[i].addCount(itemsTransferred);
-					
-					if (itemsTransferred < item.getCount()) {
-						item.addCount(-itemsTransferred);
-					} else {
-						itemsIterator.remove();
-						transferred = true;
-						break;
-					}
-				}
-			}
-			
-			if (!transferred) {
-				// Try to fill empty spaces
-				for (int i = 0; i < inventoryCellsAmount; i++) {
-					if (items[i] == null) {
-						items[i] = item;
-						itemsIterator.remove();
-						transferred = true;
-						break;
-					}
-				}
+
+			Item remainingItem = addItem(item);
+			if (remainingItem == null || remainingItem.getCount() == 0) {
+				itemsIterator.remove();
 			}
 		}
-		
-		return newItems; // Items left that should be dropped on the ground
+
+		return newItems; // Items remaining
 	}
 	
 	// Check if the mouse is in the inventory
-	public boolean isMouseInInventory(int mX, int mY, boolean inventoryOpen) {
-		// Toolbar
+	@Override
+	public boolean isMouseHoveringUI(int mX, int mY, boolean inventoryOpen) {
+		// Toolbar (if it exists)
 		if (hasToolbar) {
 			if (mX >= toolbarScreenXOffset && mX <= toolbarScreenXOffset + toolbarScreenWidth && mY >= toolbarScreenYOffset && mY <= toolbarScreenYOffset + toolbarScreenHeight) {
 				return true;
@@ -259,7 +243,8 @@ public class Inventory {
 	}
 	
 	// Get the slot hovered by the mouse (if none return -1)
-	public int getMouseHoveringSlot(int mX, int mY, boolean inventoryOpen) {
+	@Override
+	public int getMouseSlotIndex(int mX, int mY, boolean inventoryOpen) {
 		for (int i = 0; i < inventoryCellsAmount; i++) {
 			int slotX = i % inventoryWidth;
 			int slotY = Math.floorDiv(i, inventoryWidth) - 1;
@@ -284,7 +269,52 @@ public class Inventory {
 		
 		return -1; // No slot hovered
 	}
-	
+
+	@Override
+	public Item getMouseSlotItem(int mX, int mY, boolean inventoryOpen) {
+		int slot = getMouseSlotIndex(mX, mY, inventoryOpen);
+		if (slot >= 0 && slot < getInventoryCellsAmount()) return getItemWithIndex(slot);
+		return null;
+	}
+
+	/**
+	 * Transfers an item from the toolbar to the rest of the inventory or the other way around.
+	 * @param srcSlot The slot of the item to be moved
+	 */
+	public void transferSlotToolbarInventory(int srcSlot) {
+		Item srcItem = getItemWithIndex(srcSlot);
+		if (!hasToolbar || inventoryCellsAmount <= inventoryWidth) return;
+		if (srcItem == null) return;
+
+		int destinationSlotMin = srcSlot < inventoryWidth ? inventoryWidth       : 0;
+		int destinationSlotMax = srcSlot < inventoryWidth ? inventoryCellsAmount : inventoryWidth;
+
+		// Fill slots with the same item
+		for (int dstSlot = destinationSlotMin; dstSlot < destinationSlotMax; dstSlot++) {
+			Item dstItem = getItemWithIndex(dstSlot);
+			if (dstItem != null && dstItem.getId() == srcItem.getId()) {
+				int amountTransferred = Math.min(srcItem.getCount(), dstItem.getType().getMaxStack() - dstItem.getCount());
+				dstItem.addCount(amountTransferred);
+				if (amountTransferred < srcItem.getCount()) {
+					srcItem.addCount(-amountTransferred);
+				} else {
+					setItemWithIndex(srcSlot, null);
+					return;
+				}
+			}
+		}
+
+		// Fill the first empty slots
+		for (int dstSlot = destinationSlotMin; dstSlot < destinationSlotMax; dstSlot++) {
+			Item dstItem = getItemWithIndex(dstSlot);
+			if (dstItem == null) {
+				items[dstSlot] = srcItem;
+				setItemWithIndex(srcSlot, null);
+				return;
+			}
+		}
+	}
+
 	// Return the item selected in the toolbar
 	public Item getToolbarItem() {
 		if (hasToolbar) {
@@ -295,7 +325,7 @@ public class Inventory {
 		}
 	}
 	
-	// Return whether or not there is a selected item in the toolbar
+	// Return whether there is a selected item in the toolbar
 	public boolean hasSelectedToolbarItem() {
 		if (hasToolbar) {
 			return (items[selectedToolbarIndex] != null);
@@ -315,6 +345,7 @@ public class Inventory {
 		}
 	}
 
+	@Override
 	public Item getItemWithIndex(int index) {
 		if (index < 0 || index >= inventoryCellsAmount) {
 			System.err.println("Index out of bounds in Inventory.getItemWithIndex(), index: " + index);
@@ -323,26 +354,45 @@ public class Inventory {
 		return items[index];
 	}
 
+	@Override
 	public void setItemWithIndex(int index, Item item) {
 		if (index < 0 || index >= inventoryCellsAmount) {
 			System.err.println("Index out of bounds in Inventory.setItemWithIndex(), index: " + index);
 		}
 		items[index] = item;
 	}
-	
+
+	@Override
+	public void setItemCountWithIndex(int index, int count) {
+		if (index < 0 || index >= inventoryCellsAmount) {
+			System.err.println("Index out of bounds in Inventory.setItemWithIndex(), index: " + index);
+		}
+		items[index].setCount(count);
+	}
+
+	@Override
 	public int getInventoryCellsAmount() {
 		return inventoryCellsAmount;
 	}
 	
 	public Item getSelectedToolbarItem() {
+		if (!hasToolbar) {
+			System.err.println("Inventory.getSelectedToolbarItem: No toolbar for this inventory");
+			return null;
+		}
 		return items[selectedToolbarIndex];
 	}
 	
 	public void setSelectedToolbarItem(Item item) {
-		items[selectedToolbarIndex] = item;
+		if (!hasToolbar) {
+			System.err.println("Inventory.getSelectedToolbarItem: No toolbar for this inventory");
+		} else {
+			items[selectedToolbarIndex] = item;
+		}
 	}
 	
 	// Return the number of items of a chosen id
+	@Override
 	public int countItemId(int id) {
 		int count = 0;
         for (Item item : items) {
@@ -352,30 +402,35 @@ public class Inventory {
         }
 		return count;
 	}
-	
-	// Remove an item from the inventory and return false if it has been removed
+
+	/**
+	 * Attempt to remove an item from the inventory. Do not remove items if the count is higher than the items in the inventory.
+	 * @param item Item with count to remove from the inventory
+	 * @return true if the item was removed, false if not possible.
+	 */
+	@Override
 	public boolean removeItem(Item item) {
 		if (item.getCount() <= 0) {
 			return true;
 		}
-		int itemCountRemaining = item.getCount();
+		int itemsToRemove = item.getCount();
 		
 		// Check that there are enough items in inventory
-		if (countItemId(item.getId()) < itemCountRemaining) {
+		if (countItemId(item.getId()) < itemsToRemove) {
 			System.err.println("Not enough items in inventory to start removing in Inventory.removeItem()");
 			return false;
 		}
 		
 		for (int i = 0; i < items.length; i++) {
 			if (items[i] != null && items[i].getId() == item.getId()) {
-				int itemsRemovedCount = Math.min(itemCountRemaining, items[i].getCount());
+				int itemsRemovedCount = Math.min(itemsToRemove, items[i].getCount());
 				if (items[i].getCount() - itemsRemovedCount <= 0) {
 					items[i] = null;
 				} else {
 					items[i].addCount(-itemsRemovedCount);
 				}
-				itemCountRemaining -= itemCountRemaining;
-				if (itemCountRemaining <= 0) {
+				itemsToRemove -= itemsRemovedCount;
+				if (itemsToRemove <= 0) {
 					return true;
 				}
 			}
@@ -384,9 +439,19 @@ public class Inventory {
 		System.err.println("Not enough items in inventory while removing in Inventory.removeItem()");
 		return false;
 	}
-	
-	// Get a list containing all the items in inventory without duplicates
-	// WARNING ! Items may have a higher count than max stack count ! 
+
+	@Override
+	public void clearInventory() {
+		for (int i = 0; i < inventoryCellsAmount; i++) {
+			items[i] = null;
+		}
+	}
+
+	/**
+	 * Get a list containing all the items in inventory without duplicates.<br>
+	 * WARNING ! Items may have a higher count than max stack count !
+	 */
+	@Override
 	public ArrayList<Item> getItemsListCopy() {
 		ArrayList<Item> itemsList = new ArrayList<Item>();
 		
@@ -413,23 +478,30 @@ public class Inventory {
 	
 	// Warning ! Will modify lists
 	public static ArrayList<Item> combineItemsLists(ArrayList<Item> itemsList1, ArrayList<Item> itemsList2) {
-		ArrayList<Item> combinedLists = new ArrayList<Item>(itemsList1);
+		if (itemsList1 == null && itemsList2 == null) return new ArrayList<>();
+		if (itemsList1 == null) return itemsList2;
+		if (itemsList2 == null) return itemsList1;
+
+		ArrayList<Item> combinedLists = new ArrayList<>(itemsList1);
 		
-		for (Item item : itemsList2) {
+		for (Item newItem : itemsList2) {
 			boolean itemIsInCombinedList = false;
 			for (Item itemInCombinedList : combinedLists) {
-				if (itemInCombinedList.getId() == item.getId()) {
-					item.addCount(itemInCombinedList.getCount());
+				if (itemInCombinedList.getId() == newItem.getId()) {
+					itemInCombinedList.addCount(newItem.getCount());
 					itemIsInCombinedList = true;
 					break;
 				}
 			}
 			if (!itemIsInCombinedList) {
-				combinedLists.add(item);
+				combinedLists.add(newItem);
 			}
 		}
 		
 		return combinedLists;
 	}
-	
+
+	public boolean getHasToolbar() {
+		return hasToolbar;
+	}
 }

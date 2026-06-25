@@ -330,6 +330,10 @@ public class World {
 		return true;
 	}
 
+	/**
+	 * Trigger a right click action on a block and return true if the right click action was handled
+	 * @return true if the right click was used, false if the event should keep propagating
+	 */
 	public boolean rightClickBlock(int bX, int bY) {
 		Block block = getBlock(bX, bY);
 

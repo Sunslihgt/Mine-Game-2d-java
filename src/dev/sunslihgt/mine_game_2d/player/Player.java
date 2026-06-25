@@ -27,8 +27,6 @@ public class Player {
 	
 	private static final int clickCooldown = 50;
 	private long lastRightClickTime = 0;
-//	private boolean lastLeftClicked = false;
-	private boolean lastRightClicked = false;
 
 	private float x, y;
 	private float velX, velY;
@@ -269,8 +267,9 @@ public class Player {
 	}
 
 	private void checkMouseInput() {
-		boolean leftClicked = handler.getMouseManager().isLeftPressed();
-		boolean rightClicked = handler.getMouseManager().isRightPressed();
+		boolean leftClicked = handler.getMouseManager().isLeftDown();
+		boolean rightClicked = handler.getMouseManager().isRightDown();
+		boolean rightJustClicked = handler.getMouseManager().isRightJustPressed();
 
 		// Left click
 		if (leftClicked) {
@@ -278,34 +277,22 @@ public class Player {
 		}
 
 		// Right click
-		if (rightClicked && lastRightClickTime + clickCooldown < System.currentTimeMillis()) {
+		if (rightJustClicked || (rightClicked && lastRightClickTime + clickCooldown < System.currentTimeMillis())) {
 			lastRightClickTime = System.currentTimeMillis();
 
-			// Try to use a block (eg: chest), else try to use an item (eg: place block)
-			if (!lastRightClicked) {
-				int playerCursorX = playerCursor.getbX();
-				int playerCursorY = playerCursor.getbY();
+			int playerCursorX = playerCursor.getbX();
+			int playerCursorY = playerCursor.getbY();
 
-				if (!playerInventory.isMouseInInventory()) {
-					if (!handler.getWorld().rightClickBlock(playerCursorX, playerCursorY)) {
-						// Right click action of item
-						if (playerInventory.hasSelectedToolbarItem()) {
-							playerInventory.selectedItemRightClick();
-						}
-					}
-				}
-
-			} else {
+			// If right click just pressed or the current block is right-clicked but the event can keep propagating
+			// -> Try to use a block (eg: chest), else try to use an item (eg: place block)
+			boolean blockRightClickUsed = !playerInventory.isMouseInAnyInventory() && !handler.getWorld().rightClickBlock(playerCursorX, playerCursorY);
+			if (rightJustClicked || !blockRightClickUsed) {
 				// Right click action of item
 				if (playerInventory.hasSelectedToolbarItem()) {
 					playerInventory.selectedItemRightClick();
 				}
 			}
-
 		}
-
-//		lastLeftClicked = leftClicked;
-		lastRightClicked = rightClicked;
 	}
 
 	public void render() {
